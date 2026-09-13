@@ -3,9 +3,13 @@ name: CI
 # Run this workflow on every push and pull request
 on:
   push:
-    branches:[main, develop]
+    branches:
+      - main
+      - develop
   pull_request:
-    branches:[main, develop]
+    branches:
+      - main
+      - develop
 
 jobs:
   test:
