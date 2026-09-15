@@ -3,6 +3,7 @@ venv/
 
 # Environment variables
 .env
+.env.example
 
 # Python cache
 __pycache__/
