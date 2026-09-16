@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
+from app.api.ask import get_answer
 
 app = FastAPI(
     title="Doculens",
@@ -12,3 +14,17 @@ def health_check():
             "service": "Doculens-api",
             "version": "0.1.0"
             }
+
+
+
+# Pydantic model defines the shape of the request body
+# FastAPI uses this to automatically validate incoming JSON
+
+class AskRequest(BaseModel):  # inherits from BaseModel — gets validation, type checking, auto JSON parsing
+    question: str
+
+@app.post("/ask")
+def ask(request: AskRequest):
+    # Call get_answer with the question from the request body
+    result = get_answer(request.question)
+    return result
