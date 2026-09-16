@@ -6,9 +6,12 @@ from app.api.search import search_chunks
 # Load environment variables from .env file
 load_dotenv() 
 
-# Create the Groq client - this is what we use to call the LLM
-# It automatically picks up GROQ_API_KEY from environment
-client = Groq(api_key=os.environ.get("GROQ_API_KEY")) 
+# Create the Groq client lazily - only when actually needed
+# This prevents CI from failing at import time when GROQ_API_KEY is not set
+
+def get_client():
+    # It automatically picks up GROQ_API_KEY from environment
+    client = Groq(api_key=os.environ.get("GROQ_API_KEY")) 
 
 # guadrail check
 def get_answer(question):
@@ -28,7 +31,7 @@ def get_answer(question):
     # Step 3: Build context from the top chunks i.e. we will build the prompt
     # We join all 5 chunks into one block of text for the LLM
     # Each chunk is labelled with its source file so LLM knows where it came from
-    context = "\n\n".join(
+    context = "\n\n".join (
          f"[Source:{r[0]}]\n{r[1]}" for r in results
      )
 
@@ -38,7 +41,7 @@ def get_answer(question):
     # Step 4: Build the prompt and call the LLM
     # System = instructions for how the LLM should behave (our guadrail prompt)
     # user = the actual question + the context chunks we retreived
-    response = client.chat.completions.create(
+    response = get_client().chat.completions.create(
         model="openai/gpt-oss-20b",
         messages=[
             {
