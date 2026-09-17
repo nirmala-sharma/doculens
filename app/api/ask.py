@@ -4,15 +4,14 @@ from dotenv import load_dotenv
 from app.api.search import search_chunks
 
 # Load environment variables from .env file
-load_dotenv() 
+# load_dotenv() 
 
 # Create the Groq client lazily - only when actually needed
 # This prevents CI from failing at import time when GROQ_API_KEY is not set
 
 def get_client():
     # It automatically picks up GROQ_API_KEY from environment
-    client = Groq(api_key=os.environ.get("GROQ_API_KEY")) 
-
+    return Groq(api_key=os.environ["GROQ_API_KEY"])
 # guadrail check
 def get_answer(question):
     # Step 1: Search for the most relevant chunks from the database, search_chunks returns a list of tuples. Each tuple is (source, content, score)
