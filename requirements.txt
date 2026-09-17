@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pytest
+httpx
+psycopg2-binary
+sentence-transformers
+python-dotenv
+groq

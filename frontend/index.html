@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuLens</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 720px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #1a1a2e;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 32px;
+            font-size: 0.95rem;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { border-color: #4f46e5; }
+
+        button {
+            padding: 12px 24px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover { background: #4338ca; }
+        button:disabled { background: #a5a3d4; cursor: not-allowed; }
+
+        .loading {
+            display: none;
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        .answer-card {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 16px;
+        }
+
+        .answer-card h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #4f46e5;
+            margin-bottom: 12px;
+        }
+
+        .answer-text {
+            line-height: 1.7;
+            color: #333;
+        }
+
+        .sources-card {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .sources-card h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .source-tag {
+            display: inline-block;
+            background: #f0f0ff;
+            color: #4f46e5;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            margin: 4px 4px 4px 0;
+        }
+
+        .score {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 12px;
+        }
+
+        .error {
+            color: #e53e3e;
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+       <h1>🔍 Doculens</h1>
+       <p class="subtitle">Ask questions about FastAPI - answers with citations from official docs</p>
+      <div class="search-box">
+            <input type="text" id="question" placeholder="e.g. How do I define a GET endpoint?" />
+            <button id="askBtn" onclick="askQuestion()">Ask</button>
+      </div>
+      <p class="loading" id="loading">⏳ Searching documentation...</p>
+      <div class="error" id="error"></div>
+
+      <div class="answer-card" id="answerCard">
+        <h3>Answer</h3>
+        <p class="answer-text" id="answerText"></p>
+        <p class="score" id="scoreText"></p>
+      </div>
+
+      <div class="sources-card" id="sourcesCard">
+        <h3>Sources</h3>
+        <div id="sourcesList"></div>
+      </div>
+     </div>
+    
+    </div>
+    <script>
+     // Allow pressing Enter to submit
+     document.getElementById('question').addEventListener('keypress',function(e){
+        if(e.key === 'Enter') askQuestion();
+     });
+
+    async function askQuestion(){
+        const question = document.getElementById('question').value.trim();
+        if(!question) return;
+
+        // Show loading, hide previous results
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('answerCard').style.display = 'none';
+        document.getElementById('sourcesCard').style.display = 'none';
+        document.getElementById('error').style.display = 'none';
+        document.getElementById('askBtn').disabled = true;
+
+        try {
+    const response = await fetch('http://localhost:8000/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: question })
+    });
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+
+    // Show answer
+    document.getElementById('answerText').textContent = data.answer;
+    document.getElementById('scoreText').textContent = `Confidence score: ${data.top_score}`;
+    document.getElementById('answerCard').style.display = 'block';
+
+    // Show sources
+    const sourcesList = document.getElementById('sourcesList');
+    sourcesList.innerHTML = '';
+    data.sources.forEach(source => {           // ← renamed to 'source'
+        const tag = document.createElement('span');
+        tag.className = 'source-tag';
+        tag.textContent = source;              // ← now matches
+        sourcesList.appendChild(tag);
+    });
+    document.getElementById('sourcesCard').style.display = 'block';
+
+} catch (err) {
+    document.getElementById('error').textContent = 'Error connecting to the API. Make sure Docker is running';
+    document.getElementById('error').style.display = 'block';
+    }
+        finally{
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('askBtn').disabled = false;
+
+        }
+
+       
+     
+    }
+    </script>
+
+</body>
+</html>
