@@ -1,14 +1,14 @@
 import os 
 import psycopg2  # Python library that lets python code to talk to PostgreSQL database
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 
 # Load the same embedding model we used during ingestion
 # It must be the same model so vectors are in the same "space"
-model = SentenceTransformer("BAAI/bge-small-en-v1.5")
+model = TextEmbedding("BAAI/bge-small-en-v1.5")
 
 def search_chunks(questions, top_K=5):
     # Step 1: Convert the user's question into a vector(same way we converted the chunks)
-    query_embedding = model.encode(questions).tolist()
+    query_embedding = list(model.embed([questions]))[0].tolist()
 
     # Step 2: Connect to the database where our 452 chunks are stored
     # cursor is like a remote control to send SQL commands through the connection
