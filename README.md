@@ -18,7 +18,11 @@ You ask: *"How do I define a POST endpoint in FastAPI?"*
 DocuLens retrieves the most relevant documentation chunks, passes them to an LLM, and returns an answer with the exact source files cited.
 
 ---
+## 🖼️ Demo
 
+🔗 **Live Demo:** https://brilliant-beijinho-a6069f.netlify.app/
+
+---
 ## How It Works
 
 ```
