@@ -6,3 +6,5 @@ psycopg2-binary
 fastembed
 python-dotenv
 groq
+pdfplumber
+python-multipart

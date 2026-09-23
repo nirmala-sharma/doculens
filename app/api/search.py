@@ -6,7 +6,7 @@ from fastembed import TextEmbedding
 # It must be the same model so vectors are in the same "space"
 model = TextEmbedding("BAAI/bge-small-en-v1.5")
 
-def search_chunks(questions, top_K=5):
+def search_chunks(questions, top_K=1, source_filter=None):
     # Step 1: Convert the user's question into a vector(same way we converted the chunks)
     query_embedding = list(model.embed([questions]))[0].tolist()
 
@@ -23,15 +23,27 @@ def search_chunks(questions, top_K=5):
     # ORDER BY distance = most similar chunk comes first
     # LIMIT %s = only return top 5 results
 
-    cursor.execute(
-        """
-        SELECT source, content, 1 - (embedding <-> %s::vector) AS score
-        from documents
-        ORDER BY embedding <-> %s :: vector
-        LIMIT %s
-        """,
-        (query_embedding, query_embedding, top_K)
-    )
+    if source_filter:
+        cursor.execute(
+            """
+            SELECT source, content, 1 - (embedding <-> %s::vector) AS score
+            FROM documents
+            WHERE source = %s
+            ORDER BY embedding <-> %s::vector
+            LIMIT %s
+            """,
+            (query_embedding, source_filter, query_embedding, int(top_K))
+        )
+    else:
+        cursor.execute(
+            """
+            SELECT source, content, 1 - (embedding <-> %s::vector) AS score
+            FROM documents
+            ORDER BY embedding <-> %s::vector
+            LIMIT %s
+            """,
+            (query_embedding, query_embedding, int(top_K))
+        )
     # In plain english the query means like this : Go to the documents table. 
     # For every chunk stored there, calculate how 
     # similar it is to my question's vector.

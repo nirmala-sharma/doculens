@@ -1,16 +1,25 @@
 from  pathlib import Path
-from sentence_transformers import SentenceTransformer   
+from fastembed import TextEmbedding
 from dotenv import load_dotenv
 import psycopg2
 import os
+import pdfplumber
+import io
 
+
+def extract_text_from_pdf(file_bytes: bytes) -> str:
+    text = ""
+    with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
+        for page in pdf.pages:
+            text += page.extract_text() or ""
+    return text
 load_dotenv()  # Load environment variables from .env file
 
 # Load the model once - loading it takes a few seconds
 # so we do it once at the top, not inside every function
-model = SentenceTransformer("BAAI/bge-small-en-v1.5")
+model = TextEmbedding("BAAI/bge-small-en-v1.5")
 
-def chunk_text(text, chunk_size=500, overlap=50):
+def chunk_text(text, chunk_size=100, overlap=20):
   # split the entire document into individual words
   # "How are you doing today" -> ["How", "are", "you", "doing", "today"]
     words = text.split()
@@ -36,7 +45,8 @@ def read_file(filepath):
 
 def embed_text(text):
     # Convert text into a list of 384 numbers
-    return model.encode(text).tolist()
+    embeddings = list(model.embed([text]))
+    return embeddings[0].tolist()
 
 def get_db_connection():
     # Read the database URL from environment variables and connect
@@ -50,6 +60,18 @@ def store_chunk(cursor,source,chunk_index,content,embedding):
         VALUES (%s, %s, %s, %s)""",
         (source,chunk_index,content,embedding)
     )
+
+def ingest_text(source: str, text: str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM documents WHERE source = %s", (source,))  
+    chunks = chunk_text(text)
+    for i, chunk in enumerate(chunks):
+        embedding = embed_text(chunk)
+        store_chunk(cursor, source, i, chunk, embedding)
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 def main():
     # Connect to the database once before processing anything
