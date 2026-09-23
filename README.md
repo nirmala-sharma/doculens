@@ -174,7 +174,6 @@ CI runs automatically on every push to main and develop.
 
 ## Roadmap
 
-- [ ] Cloud deployment (Render + Netlify)
 - [ ] Support multiple documentation sources
 - [ ] Evaluation suite with golden Q&A dataset
 - [ ] Streaming responses
