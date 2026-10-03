@@ -546,7 +546,9 @@ async function doUpload(files) {
             await fetch(`${API_BASE}/upload`, { method: 'POST', body: fd });
         }
         uploadedSource = files.length === 1 ? files[0].name : null;
-        badgeText.textContent = files.length === 1 ? files[0].name : `${files.length} files loaded`;
+        const names = files.map(f => f.name).join('\n');
+        document.getElementById('uploadBadge').title = names;
+        badgeText.textContent = files.length === 1 ? files[0].name : `${files.length} files loaded`;   
         badge.classList.add('visible');
     } catch (e) {
         showError('Upload failed. Make sure the backend is running.');
@@ -605,6 +607,19 @@ function appendThinking() {
     row.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
 
+function renderMarkdown(text) {
+    return text
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+}
+
 async function askQuestion() {
     if (isLoading) return;
 
@@ -656,7 +671,7 @@ async function askQuestion() {
             <div class="message-inner">
                 <div class="avatar assistant">✦</div>
                 <div class="message-content">
-                    <div class="message-text">${escapeHtml(data.answer)}</div>
+                    <div class="message-text">${renderMarkdown(data.answer)}</div>
                     ${sourcesHtml}
                     <div class="score-text">Confidence: ${data.top_score}</div>
                 </div>

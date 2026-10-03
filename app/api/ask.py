@@ -58,6 +58,14 @@ def get_answer(question,source_filter=None):
 
     # Step 5: Extract the answer text from the response and return everything
     answer = response.choices[0].message.content
+
+    # Clear sources if LLM couldn't find the answer in context
+    NOT_FOUND_PHRASES = ["couldn't find", "could not find", "not in the", "not found", "no information"]
+    if any(phrase in answer.lower() for phrase in NOT_FOUND_PHRASES):
+     sources = []
+    else:
+     sources = list(set(r[0] for r in results))
+ 
     return {
         "answer":answer,
         "sources":sources,

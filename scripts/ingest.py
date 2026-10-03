@@ -19,7 +19,7 @@ load_dotenv()  # Load environment variables from .env file
 # so we do it once at the top, not inside every function
 model = TextEmbedding("BAAI/bge-small-en-v1.5")
 
-def chunk_text(text, chunk_size=100, overlap=20):
+def chunk_text(text, chunk_size=300, overlap=50):
   # split the entire document into individual words
   # "How are you doing today" -> ["How", "are", "you", "doing", "today"]
     words = text.split()
