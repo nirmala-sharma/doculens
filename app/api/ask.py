@@ -33,7 +33,7 @@ def get_answer(question,source_filter=None):
     context = "\n\n".join(
     f"[Source:{r[0]}]\n{r[1]}" for r in results
 )
-    context = context[:3000] 
+    context = context[:4000] 
 
     # Collect unique source filenames for the citations in our response
     sources = list(set(r[0] for r in results))

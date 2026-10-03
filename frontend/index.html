@@ -407,6 +407,20 @@
         }
 
         .error-toast.visible { display: block; }
+
+        pre {
+          background: #1a1a1a;
+          border: 1px solid #3f3f3f;
+          border-radius: 8px;
+          padding: 12px;
+          overflow-x: auto;
+          margin: 8px 0;
+      }
+pre code {
+    color: #a5f3c0;
+    font-family: monospace;
+    font-size: 0.85rem;
+}
     </style>
 </head>
 <body>
@@ -608,16 +622,29 @@ function appendThinking() {
 }
 
 function renderMarkdown(text) {
-    return text
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    // Code blocks first, before any escaping
+    text = text.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) => 
+        `<pre><code>${code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code></pre>`
+    );
+    
+    // Now escape the rest
+    text = text
+        .replace(/&(?!amp;|lt;|gt;)/g,'&amp;')
+        .replace(/(?<!<[^>]*)(?<!<pre><code>[\s\S]*)<(?![^<]*<\/code><\/pre>)/g, match => '&lt;')
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
         .replace(/^### (.+)$/gm, '<h3>$1</h3>')
         .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        .replace(/^\* (.+)$/gm, '<li>$1</li>')
         .replace(/^- (.+)$/gm, '<li>$1</li>')
-        .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+        .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>[\s\S]+?<\/li>)(\n(?!<li>)|$)/g, '<ul>$1</ul>')
         .replace(/\n\n/g, '<br><br>')
         .replace(/\n/g, '<br>');
+
+    return text;
 }
 
 async function askQuestion() {
