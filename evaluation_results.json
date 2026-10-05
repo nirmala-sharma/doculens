@@ -1,0 +1,162 @@
+[
+    {
+        "id": 1,
+        "question": "What is a NumPy array?",
+        "passed": true,
+        "latency_ms": 494,
+        "top_score": 0.391,
+        "answer": "A NumPy array is the core data structure of the library, called an **ndarray**.  \nIt encapsulates *n"
+    },
+    {
+        "id": 2,
+        "question": "What is the difference between a Python list and a NumPy array?",
+        "passed": false,
+        "latency_ms": 739,
+        "top_score": 0.327,
+        "answer": "I couldn't find this in the provided document."
+    },
+    {
+        "id": 3,
+        "question": "What does the shape attribute of an array represent?",
+        "passed": true,
+        "latency_ms": 569,
+        "top_score": 0.306,
+        "answer": "The `shape` attribute is a tuple that tells you how many elements the array contains in each of its "
+    },
+    {
+        "id": 4,
+        "question": "What is broadcasting in NumPy?",
+        "passed": true,
+        "latency_ms": 966,
+        "top_score": 0.451,
+        "answer": "Broadcasting is the set of rules that NumPy follows to let arrays of different shapes participate in"
+    },
+    {
+        "id": 5,
+        "question": "How do you create an array of zeros in NumPy?",
+        "passed": false,
+        "latency_ms": 467,
+        "top_score": 0.333,
+        "answer": "I couldn't find this in the provided document."
+    },
+    {
+        "id": 6,
+        "question": "What is the dtype of a NumPy array?",
+        "passed": true,
+        "latency_ms": 7109,
+        "top_score": 0.43,
+        "answer": "The **dtype** of a NumPy array is the data\u2011type specification that defines the type of each element "
+    },
+    {
+        "id": 7,
+        "question": "What does np.reshape do?",
+        "passed": true,
+        "latency_ms": 10039,
+        "top_score": 0.283,
+        "answer": "`np.reshape` returns the same data arranged with a new shape.  \nIt does **not** change the original "
+    },
+    {
+        "id": 8,
+        "question": "What is a universal function (ufunc) in NumPy?",
+        "passed": true,
+        "latency_ms": 12969,
+        "top_score": 0.537,
+        "answer": "A universal function (commonly called a **ufunc**) in NumPy is a vectorized routine that operates on"
+    },
+    {
+        "id": 9,
+        "question": "What is the difference between copy and view in NumPy?",
+        "passed": true,
+        "latency_ms": 13144,
+        "top_score": 0.354,
+        "answer": "In NumPy a **view** is a new array object that shares the same underlying data buffer as another arr"
+    },
+    {
+        "id": 10,
+        "question": "How do you index a 2D NumPy array?",
+        "passed": true,
+        "latency_ms": 11122,
+        "top_score": 0.327,
+        "answer": "**Indexing a 2\u2011D NumPy array**\n\nA two\u2011dimensional NumPy array `a` is indexed by giving a **row index"
+    },
+    {
+        "id": 11,
+        "question": "What does np.linspace do?",
+        "passed": true,
+        "latency_ms": 14707,
+        "top_score": 0.334,
+        "answer": "np.linspace creates a sequence of evenly spaced numbers over a specified interval.  For example, np."
+    },
+    {
+        "id": 12,
+        "question": "What is axis in NumPy operations?",
+        "passed": true,
+        "latency_ms": 10943,
+        "top_score": 0.333,
+        "answer": "**Axis in NumPy operations**  \nIn NumPy, many aggregation functions (such as `sum`, `min`, `max`, `m"
+    },
+    {
+        "id": 13,
+        "question": "What does np.concatenate do?",
+        "passed": true,
+        "latency_ms": 15069,
+        "top_score": 0.258,
+        "answer": "**np.concatenate** joins together two or more arrays along an existing axis (by default the first ax"
+    },
+    {
+        "id": 14,
+        "question": "What is the purpose of np.arange?",
+        "passed": true,
+        "latency_ms": 14302,
+        "top_score": 0.285,
+        "answer": "`np.arange` is used to create an array of evenly\u2011spaced values over a specified interval. It generat"
+    },
+    {
+        "id": 15,
+        "question": "What does np.transpose do?",
+        "passed": false,
+        "latency_ms": 11033,
+        "top_score": 0.332,
+        "answer": "I couldn't find this in the provided document."
+    },
+    {
+        "id": 16,
+        "question": "What is the weather in New York today?",
+        "passed": true,
+        "latency_ms": 28,
+        "top_score": -0.054,
+        "answer": "I couldn't find relevant information in the documentation."
+    },
+    {
+        "id": 17,
+        "question": "Who is the current president of the United States?",
+        "passed": true,
+        "latency_ms": 19,
+        "top_score": -0.047,
+        "answer": "I couldn't find relevant information in the documentation."
+    },
+    {
+        "id": 18,
+        "question": "What is the capital of France?",
+        "passed": true,
+        "latency_ms": 20,
+        "top_score": -0.037,
+        "answer": "I couldn't find relevant information in the documentation."
+    },
+    {
+        "id": 19,
+        "question": "How do I make pasta?",
+        "passed": true,
+        "latency_ms": 12,
+        "top_score": 0.055,
+        "answer": "I couldn't find relevant information in the documentation."
+    },
+    {
+        "id": 20,
+        "question": "What is the stock price of Apple?",
+        "passed": true,
+        "latency_ms": 21,
+        "top_score": 0.044,
+        "answer": "I couldn't find relevant information in the documentation."
+    }
+]
