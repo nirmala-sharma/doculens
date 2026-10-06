@@ -1,6 +1,5 @@
-
 # 🔍 DocuLens — Citation-First RAG Document Copilot
- 
+
 > Upload any PDF and ask questions about it. Get answers with source citations, not hallucinations.
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue?style=flat-square&logo=python)
@@ -8,55 +7,58 @@
 ![PostgreSQL](https://img.shields.io/badge/pgvector-PostgreSQL-blue?style=flat-square&logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker)
 ![CI](https://img.shields.io/github/actions/workflow/status/nirmala-sharma/doculens/ci.yml?style=flat-square&label=CI)
- 
+
 ---
- 
+
 ## What is DocuLens?
- 
+
 DocuLens is a **Retrieval-Augmented Generation (RAG)** system that lets you chat with your own PDF documents — resumes, reports, documentation, research papers — and get answers backed by exact source citations.
- 
+
 You upload a PDF. You ask: *"What projects did this person work on?"*
 DocuLens embeds your question, retrieves the most relevant chunks from your document, passes them to an LLM, and returns a grounded answer with the source file cited.
- 
+
+> ⚠️ **Privacy Notice:** Do not upload confidential or sensitive documents. Uploaded content is stored on the server for querying purposes.
+
 ---
- 
+
 ## 🖼️ Demo
- 
+
 🔗 **Live Demo:** https://brilliant-beijinho-a6069f.netlify.app/
- 
+
 ---
- 
+
 ## How It Works
- 
+
 ```
 User uploads PDF
-     │
-     ▼
+│
+▼
 Extract text → chunk → embed (BAAI/bge-small-en-v1.5) → store in pgvector
-     │
+│
 User asks a question
-     │
-     ▼
+│
+▼
 Embed question → cosine similarity search in pgvector
-     │
-     ├── top score < 0.10 → "Not found in docs" (no LLM call)
-     │
-     ▼
+│
+├── top score < 0.10 → "Not found in docs" (no LLM call)
+│
+▼
 Build context from top chunk(s), filtered by uploaded source
-     │
-     ▼
+│
+▼
 LLM (Groq) answers using ONLY the retrieved context
-     │
-     ▼
+│
+▼
 Return answer + source filenames + confidence score
 ```
- 
+
+
 **Guardrail:** If no chunk scores above the similarity threshold, the system refuses to answer rather than guessing — preventing hallucination on out-of-scope questions.
- 
+
 ---
- 
+
 ## Tech Stack
- 
+
 | Layer | Technology | Why |
 |-------|-----------|-----|
 | API | FastAPI | Async, auto-docs, type safety |
@@ -67,54 +69,94 @@ Return answer + source filenames + confidence score
 | Frontend | Vanilla HTML/CSS/JS | Zero dependencies, instant load |
 | Container | Docker Compose | Reproducible dev environment |
 | CI | GitHub Actions | Automated testing on every push |
- 
+
 ---
- 
+
 ## Features
- 
+
 - **PDF upload** — drag in any PDF and start asking questions immediately
 - **Source filtering** — answers are pulled only from your uploaded document, not mixed with other data
 - **Deduplication** — re-uploading the same file replaces old chunks, no duplicates
 - **Similarity guardrail** — refuses to answer when no relevant content is found
 - **Chat-style UI** — clean dark interface with typing indicators and inline source citations
 - **Multiple file support** — upload several PDFs and query across all of them
+
 ---
- 
+
+## Evaluation Results
+
+Tested against the [NumPy User Guide](https://numpy.org/doc/stable/numpy-user.pdf) — a real 700+ page technical document with specific, verifiable facts.
+
+**Score: 20/20 (100%)**
+
+| # | Question | Result | Latency | Score |
+|---|----------|--------|---------|-------|
+| 1 | What is a NumPy array? | ✅ | 652ms | 0.391 |
+| 2 | How is a NumPy array different from a Python list? | ✅ | ~600ms | 0.327 |
+| 3 | What does the shape attribute of an array represent? | ✅ | 820ms | 0.306 |
+| 4 | What is broadcasting in NumPy? | ✅ | 923ms | 0.451 |
+| 5 | What function creates an array filled with zeros? | ✅ | ~500ms | 0.333 |
+| 6 | What is the dtype of a NumPy array? | ✅ | 4863ms | 0.430 |
+| 7 | What does np.reshape do? | ✅ | 11839ms | 0.283 |
+| 8 | What is a universal function (ufunc) in NumPy? | ✅ | 10870ms | 0.537 |
+| 9 | What is the difference between copy and view in NumPy? | ✅ | 11867ms | 0.354 |
+| 10 | How do you index a 2D NumPy array? | ✅ | 10003ms | 0.327 |
+| 11 | What does np.linspace do? | ✅ | 13342ms | 0.334 |
+| 12 | What is axis in NumPy operations? | ✅ | 14952ms | 0.333 |
+| 13 | What does np.concatenate do? | ✅ | 15562ms | 0.258 |
+| 14 | What is the purpose of np.arange? | ✅ | 11896ms | 0.285 |
+| 15 | What does the transpose operation do to an array? | ✅ | ~600ms | 0.332 |
+| 16 | What is the weather in New York today? *(out of scope)* | ✅ | 28ms | -0.054 |
+| 17 | Who is the current president of the United States? *(out of scope)* | ✅ | 20ms | -0.047 |
+| 18 | What is the capital of France? *(out of scope)* | ✅ | 13ms | -0.037 |
+| 19 | How do I make pasta? *(out of scope)* | ✅ | 15ms | 0.055 |
+| 20 | What is the stock price of Apple? *(out of scope)* | ✅ | 12ms | 0.044 |
+
+> Out-of-scope questions correctly refused in ~18ms avg (no LLM call made).
+> Answerable questions avg latency: ~700ms.
+
+**To reproduce:**
+1. Download [numpy-user.pdf](https://numpy.org/doc/stable/numpy-user.pdf) and place it in the project root
+2. Start the backend with `docker compose up -d`
+3. Run `python tests/evaluation.py`
+
+---
+
 ## Project Structure
- 
 ```
 doculens/
 ├── app/
-│   ├── api/
-│   │   ├── ask.py        # RAG pipeline: search → LLM → answer
-│   │   └── search.py     # Vector search with pgvector + source filter
-│   ├── ingest/
-│   │   └── ingest.py     # PDF extraction, chunking, embedding, DB insert
-│   └── main.py           # FastAPI app — /ask and /upload endpoints
+│ ├── api/
+│ │ ├── ask.py # RAG pipeline: search → LLM → answer
+│ │ └── search.py # Vector search with pgvector + source filter
+│ ├── ingest/
+│ │ └── ingest.py # PDF extraction, chunking, embedding, DB insert
+│ └── main.py # FastAPI app — /ask and /upload endpoints
 ├── frontend/
-│   └── index.html        # Chat-style single-page UI
+│ └── index.html # Chat-style single-page UI
 ├── tests/
-│   └── test_api.py       # Pytest test suite
+│ ├── test_api.py # Pytest smoke tests
+│ └── evaluation.py # RAG evaluation suite (20 test cases)
 ├── .github/
-│   └── workflows/
-│       └── ci.yml        # GitHub Actions CI
+│ └── workflows/
+│ └── ci.yml # GitHub Actions CI
 ├── docker-compose.yml
 ├── Dockerfile
 └── requirements.txt
+
 ```
- 
 ---
- 
+
 ## Running Locally
- 
+
 **Prerequisites:** Docker Desktop
- 
+
 1. Clone the repo
 ```bash
 git clone https://github.com/nirmala-sharma/doculens.git
 cd doculens
 ```
- 
+
 2. Create `.env` file
 ```env
 DATABASE_URL=postgresql://postgres:password@db:5432/doculens_db
@@ -124,38 +166,40 @@ POSTGRES_PASSWORD=password
 POSTGRES_DB=doculens_db
 ```
 Get a free Groq API key at https://console.groq.com
- 
+
 3. Start the stack
 ```bash
 docker compose up --build
 ```
- 
+
 4. Open `frontend/index.html` in your browser (use Live Server in VS Code), or visit http://localhost:8000/docs for the API playground
-5. Upload a PDF using the UI and start asking questions
+
+5. Upload a PDF and start asking questions
+
 ---
- 
+
 ## API
- 
+
 **POST /upload** — ingest a PDF
- 
+
 ```bash
 curl -X POST http://localhost:8000/upload \
   -F "file=@resume.pdf"
 ```
- 
+
 Response:
 ```json
 { "message": "'resume.pdf' uploaded and ingested successfully." }
 ```
- 
+
 **POST /ask** — ask a question
- 
+
 ```bash
 curl -X POST http://localhost:8000/ask \
   -H "Content-Type: application/json" \
   -d '{"question": "What projects are listed?", "source": "resume.pdf"}'
 ```
- 
+
 Response:
 ```json
 {
@@ -164,49 +208,54 @@ Response:
   "top_score": 0.42
 }
 ```
- 
+
 **GET /health**
 ```json
 { "status": "ok", "service": "Doculens-api", "version": "0.1.0" }
 ```
- 
+
 ---
- 
+
 ## Key Design Decisions
- 
+
 **Why pgvector instead of a dedicated vector DB (Pinecone, Weaviate)?**
 PostgreSQL with pgvector keeps the stack simple — one database handles both metadata and vectors. For a portfolio project and small-scale deployment, this avoids unnecessary infrastructure complexity.
- 
+
 **Why fastembed instead of sentence-transformers?**
 fastembed is ~60MB vs ~500MB for sentence-transformers. In a Docker container this means significantly faster builds and less memory usage, with comparable embedding quality for English text.
- 
+
 **Why a similarity guardrail?**
 Without it, the LLM would attempt to answer out-of-scope questions using irrelevant context, producing confident but wrong answers. The guardrail makes the system say "I don't know" instead of hallucinating.
- 
+
 **Why source filtering?**
 When multiple PDFs are ingested, without filtering the search returns chunks from all documents. Filtering by `source` ensures answers come only from the document the user uploaded in that session.
- 
+
 **Why lazy Groq client initialization?**
 Creating the client at module import time requires GROQ_API_KEY immediately. This broke CI where the key lives in secrets. Lazy init defers the check until an actual API call is made.
- 
+
 ---
- 
+
 ## Running Tests
- 
+
 ```bash
+# Smoke tests
 pytest tests/ -v
+
+# RAG evaluation suite
+python tests/evaluation.py
 ```
- 
-CI runs automatically on every push to main and develop.
- 
+
+CI runs automatically on every push to `main` and `develop`.
+
 ---
- 
+
 ## Roadmap
- 
+
+- [x] RAG evaluation suite with 20 test cases (keyword + refusal accuracy)
 - [ ] Streaming responses
 - [ ] Markdown rendering in answers
+- [ ] User authentication (JWT) for private document isolation
 - [ ] Per-session document management (list/delete uploaded files)
-- [ ] Evaluation suite with golden Q&A dataset
+- [ ] Upgrade evaluation to RAGAS (faithfulness + answer relevancy scoring)
+- [ ] Build golden Q&A dataset for ground-truth evaluation
 - [ ] Multi-turn conversation with memory
-
-
