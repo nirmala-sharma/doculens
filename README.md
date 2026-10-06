@@ -29,6 +29,7 @@ DocuLens embeds your question, retrieves the most relevant chunks from your docu
 
 ## How It Works
 
+```
 User uploads PDF
 │
 ▼
@@ -49,6 +50,7 @@ LLM (Groq) answers using ONLY the retrieved context
 │
 ▼
 Return answer + source filenames + confidence score
+```
 
 
 **Guardrail:** If no chunk scores above the similarity threshold, the system refuses to answer rather than guessing — preventing hallucination on out-of-scope questions.
@@ -121,7 +123,7 @@ Tested against the [NumPy User Guide](https://numpy.org/doc/stable/numpy-user.pd
 ---
 
 ## Project Structure
-
+```
 doculens/
 ├── app/
 │ ├── api/
@@ -142,7 +144,7 @@ doculens/
 ├── Dockerfile
 └── requirements.txt
 
-
+```
 ---
 
 ## Running Locally
