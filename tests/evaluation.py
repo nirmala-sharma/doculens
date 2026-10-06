@@ -18,7 +18,7 @@ TEST_CASES = [
     ("What is a NumPy array?",
      ["array", "ndarray", "homogeneous"], True),
 
-    ("What is the difference between a Python list and a NumPy array?",
+    ("How is a NumPy array different from a Python list?",
      ["list", "array", "type"], True),
 
     ("What does the shape attribute of an array represent?",
@@ -27,7 +27,7 @@ TEST_CASES = [
     ("What is broadcasting in NumPy?",
      ["broadcast", "shape", "dimensions"], True),
 
-    ("How do you create an array of zeros in NumPy?",
+    ("What function creates an array filled with zeros?",
      ["zeros", "np.zeros"], True),
 
     ("What is the dtype of a NumPy array?",
@@ -57,7 +57,7 @@ TEST_CASES = [
     ("What is the purpose of np.arange?",
      ["arange", "range", "values"], True),
 
-    ("What does np.transpose do?",
+    ("What does the transpose operation do to an array?",
      ["transpose", "axes", "rows", "columns"], True),
 
     # ── Refusal questions (5) ──
