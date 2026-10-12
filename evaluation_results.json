@@ -1,0 +1,162 @@
+[
+    {
+        "id": 1,
+        "question": "What is a NumPy array?",
+        "passed": true,
+        "latency_ms": 522,
+        "top_score": 0.391,
+        "answer": "A NumPy array is the core data structure of the library \u2013 the **`ndarray`** object. It encapsulates "
+    },
+    {
+        "id": 2,
+        "question": "How is a NumPy array different from a Python list?",
+        "passed": false,
+        "latency_ms": 715,
+        "top_score": 0.328,
+        "answer": "I couldn't find this in the provided document."
+    },
+    {
+        "id": 3,
+        "question": "What does the shape attribute of an array represent?",
+        "passed": true,
+        "latency_ms": 782,
+        "top_score": 0.306,
+        "answer": "The shape attribute gives the number of elements along each axis of the array. It is a tuple that li"
+    },
+    {
+        "id": 4,
+        "question": "What is broadcasting in NumPy?",
+        "passed": true,
+        "latency_ms": 6289,
+        "top_score": 0.451,
+        "answer": "**Broadcasting in NumPy**  \nIn NumPy, *broadcasting* is the mechanism that allows element\u2011wise opera"
+    },
+    {
+        "id": 5,
+        "question": "What function creates an array filled with zeros?",
+        "passed": false,
+        "latency_ms": 11768,
+        "top_score": 0.3,
+        "answer": "I couldn't find this in the provided document."
+    },
+    {
+        "id": 6,
+        "question": "What is the dtype of a NumPy array?",
+        "passed": true,
+        "latency_ms": 11882,
+        "top_score": 0.43,
+        "answer": "In the document, **dtype** is the description of the data type that each element of a NumPy array ha"
+    },
+    {
+        "id": 7,
+        "question": "What does np.reshape do?",
+        "passed": true,
+        "latency_ms": 10936,
+        "top_score": 0.283,
+        "answer": "`np.reshape` returns the array with a modified shape, i.e. it changes the dimensions of the data wit"
+    },
+    {
+        "id": 8,
+        "question": "What is a universal function (ufunc) in NumPy?",
+        "passed": true,
+        "latency_ms": 10256,
+        "top_score": 0.537,
+        "answer": "A universal function (ufunc) in NumPy is a function that operates on ndarrays in an element\u2011by\u2011eleme"
+    },
+    {
+        "id": 9,
+        "question": "What is the difference between copy and view in NumPy?",
+        "passed": true,
+        "latency_ms": 13004,
+        "top_score": 0.354,
+        "answer": "In NumPy a **view** is a new `ndarray` object that shares the same underlying memory buffer as the o"
+    },
+    {
+        "id": 10,
+        "question": "How do you index a 2D NumPy array?",
+        "passed": true,
+        "latency_ms": 9012,
+        "top_score": 0.327,
+        "answer": "You index a 2\u2011D NumPy array by giving two indices (or slices) separated by a comma \u2013 one for each ax"
+    },
+    {
+        "id": 11,
+        "question": "What does np.linspace do?",
+        "passed": true,
+        "latency_ms": 15097,
+        "top_score": 0.334,
+        "answer": "np.linspace generates an array of evenly spaced values between a starting value and an ending value."
+    },
+    {
+        "id": 12,
+        "question": "What is axis in NumPy operations?",
+        "passed": true,
+        "latency_ms": 13065,
+        "top_score": 0.333,
+        "answer": "In NumPy, many aggregation functions (e.g., `sum`, `min`, `max`, `mean`, `std`) can take an `axis` p"
+    },
+    {
+        "id": 13,
+        "question": "What does np.concatenate do?",
+        "passed": true,
+        "latency_ms": 13930,
+        "top_score": 0.258,
+        "answer": "`np.concatenate` combines several arrays into one by stacking them along a specified axis. For examp"
+    },
+    {
+        "id": 14,
+        "question": "What is the purpose of np.arange?",
+        "passed": true,
+        "latency_ms": 10853,
+        "top_score": 0.285,
+        "answer": "The `np.arange` function is used to generate an array of evenly spaced numbers over a specified inte"
+    },
+    {
+        "id": 15,
+        "question": "What does the transpose operation do to an array?",
+        "passed": false,
+        "latency_ms": 12796,
+        "top_score": 0.29,
+        "answer": "I couldn't find this in the provided document."
+    },
+    {
+        "id": 16,
+        "question": "What is the weather in New York today?",
+        "passed": true,
+        "latency_ms": 34,
+        "top_score": -0.054,
+        "answer": "I couldn't find relevant information in the documentation."
+    },
+    {
+        "id": 17,
+        "question": "Who is the current president of the United States?",
+        "passed": true,
+        "latency_ms": 16,
+        "top_score": -0.047,
+        "answer": "I couldn't find relevant information in the documentation."
+    },
+    {
+        "id": 18,
+        "question": "What is the capital of France?",
+        "passed": true,
+        "latency_ms": 13,
+        "top_score": -0.037,
+        "answer": "I couldn't find relevant information in the documentation."
+    },
+    {
+        "id": 19,
+        "question": "How do I make pasta?",
+        "passed": true,
+        "latency_ms": 16,
+        "top_score": 0.055,
+        "answer": "I couldn't find relevant information in the documentation."
+    },
+    {
+        "id": 20,
+        "question": "What is the stock price of Apple?",
+        "passed": true,
+        "latency_ms": 15,
+        "top_score": 0.044,
+        "answer": "I couldn't find relevant information in the documentation."
+    }
+]

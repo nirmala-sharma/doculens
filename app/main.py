@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.api.ask import get_answer
@@ -43,6 +43,10 @@ def ask(request: AskRequest):
 
 @app.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):
+    if not file.filename.endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported.")
+    if file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="Uploaded PDF file are supported.")
     contents = await file.read()
     text = extract_text_from_pdf(contents)
     ingest_text(file.filename, text)
