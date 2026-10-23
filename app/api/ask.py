@@ -1,7 +1,7 @@
 import os
 from groq import Groq
 from dotenv import load_dotenv
-from app.api.search import search_chunks
+from app.api.search import rerank_chunks, search_chunks
 
 # Load environment variables from .env file
 # load_dotenv() 
@@ -15,9 +15,17 @@ def get_client():
 # guadrail check
 def get_answer(question,source_filter=None):
     # Step 1: Search for the most relevant chunks from the database, search_chunks returns a list of tuples. Each tuple is (source, content, score)
-    results = search_chunks(question, top_K=1, source_filter=source_filter)
+    results = search_chunks(question, top_K=20, source_filter=source_filter)
 
-    # Step 2: Guadrail- check if the top result is relevant enough
+    # No chunks at all (e.g. filter matched nothing) - avoid crash
+    if not results:
+        return {
+         "answer":"I couldn't find relevant information in the documentation.",
+         "sources": [],
+         "top_score": 0
+        }
+   
+    # Step 2: Guadrail- check on the best Vector score
     # results[0]= first/best chunk, [2]=the score (index 0=source, 1=content, 2=score)
     top_score = results[0][2]
     if top_score < 0.10:
@@ -26,15 +34,17 @@ def get_answer(question,source_filter=None):
          "sources": [],
          "top_score": round(top_score, 3)
         }
-
+    # Rerank the 20 candidates and keep the best 2
+    results = rerank_chunks(question, results, top_n=2)
+ 
     # Step 3: Build context from the top chunks i.e. we will build the prompt
-    # We join all 5 chunks into one block of text for the LLM
+    # We join all 2 chunks into one block of text for the LLM
     # Each chunk is labelled with its source file so LLM knows where it came from
     context = "\n\n".join(
     f"[Source:{r[0]}]\n{r[1]}" for r in results
 )
-    context = context[:4000] 
-
+    context = context[:9000] 
+    
     # Collect unique source filenames for the citations in our response
     sources = list(set(r[0] for r in results))
 
@@ -43,7 +53,7 @@ def get_answer(question,source_filter=None):
     # user = the actual question + the context chunks we retreived
     response = get_client().chat.completions.create(
         model="openai/gpt-oss-20b",
-        max_tokens=500,
+        max_tokens=1000,
         messages=[
             {
                 "role":"system",

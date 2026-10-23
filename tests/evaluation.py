@@ -81,7 +81,10 @@ TEST_CASES = [
 def upload_pdf(pdf_path):
     print(f"Uploading PDF: {pdf_path}")
     with open(pdf_path, "rb") as f:
-        r = requests.post(f"{BASE_URL}/upload", files={"file": f}, timeout=300)
+        r = requests.post(
+    f"{BASE_URL}/upload",
+    files={"file": ("numpy-user.pdf", f, "application/pdf")},
+    timeout=300)
     r.raise_for_status()
     print(f"{r.json().get('message', 'Upload successful')}")
   
@@ -111,7 +114,7 @@ def run_eval():
 
     for i, (question, keywords, should_answer) in enumerate(TEST_CASES, 1):  # loops with index starting at 1
         resp, latency = ask(question)
-
+        time.sleep(10)
         answer = resp["answer"]
         sources = resp["sources"]
         score = resp["top_score"]
