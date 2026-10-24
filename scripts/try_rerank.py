@@ -6,10 +6,10 @@ question = "What is Nirmala' python project experience?"
 
 # Real answer is place LAST on purpose
 fake_results = [
-    ("resume.pdf", "Skills: Python, Java, SQL, Python libraries", 0.90),
-    ("resume.pdf", "Hobbies: reading, hiking, and travelling", 0.80),
-    ("resume.pdf", "Education: Bachelor's in Computer Science", 0.70),
-    ("resume.pdf", "Built DocuLens, a RAG app in Python using FastAPI and pgvector", 0.60),
+    ("resume.pdf", "Skills: Python, Java, SQL, Python libraries", 0.90, 1),
+    ("resume.pdf", "Hobbies: reading, hiking, and travelling", 0.80, 2),
+    ("resume.pdf", "Education: Bachelor's in Computer Science", 0.70, 1),
+    ("resume.pdf", "Built DocuLens, a RAG app in Python using FastAPI and pgvector", 0.60, 1),
 ]
 
 print("BEFORE:")

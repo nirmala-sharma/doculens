@@ -2,13 +2,21 @@ from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.api.ask import get_answer
-from scripts.ingest import extract_text_from_pdf, ingest_text
+from scripts.ingest import extract_pages_from_pdf, ingest_pdf
 from typing import Optional
+from contextlib import asynccontextmanager
+from app.db.schema import init_db
+
+@asynccontextmanager
+async def lifespan(app):
+    init_db()      # runs once when the app starts
+    yield          # app runs here
 
 app = FastAPI(
     title="Doculens",
     description="Citation-first RAG assistant for developer documentation",
-    version="0.1.0"
+    version="0.1.0",
+    lifespan=lifespan
 )
 
 # Allow frontend to talk to backend
@@ -48,6 +56,6 @@ async def upload_pdf(file: UploadFile = File(...)):
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Uploaded PDF file are supported.")
     contents = await file.read()
-    text = extract_text_from_pdf(contents)
-    ingest_text(file.filename, text)
+    pages = extract_pages_from_pdf(contents)
+    ingest_pdf(file.filename, pages)
     return {"message": f"'{file.filename}' uploaded and ingested successfully."}

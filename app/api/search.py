@@ -29,7 +29,7 @@ def search_chunks(questions, top_K=20, source_filter=None):
     if source_filter:
         cursor.execute(
             """
-            SELECT source, content, 1 - (embedding <-> %s::vector) AS score
+            SELECT source, content, 1 - (embedding <-> %s::vector) AS score, page
             FROM documents
             WHERE source = %s
             ORDER BY embedding <-> %s::vector
@@ -76,8 +76,8 @@ def rerank_chunks(question, results, top_n=5):
     # Sort by rerank score, best first
     scored.sort(key=lambda x:x[1],reverse=True)
 
-    # Keep top_n, return in the same (source, content, score) shape
-    return [(r[0],r[1],float(s)) for r,s in scored[:top_n]]
+    # Keep top_n, return in the same (source, content, score, page) shape
+    return [(r[0],r[1],float(s), r[3]) for r,s in scored[:top_n]]
 
 
     

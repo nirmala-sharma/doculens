@@ -32,6 +32,7 @@ def get_answer(question,source_filter=None):
         return {
          "answer":"I couldn't find relevant information in the documentation.",
          "sources": [],
+          "citations":citations,
          "top_score": round(top_score, 3)
         }
     # Rerank the 20 candidates and keep the best 2
@@ -47,6 +48,17 @@ def get_answer(question,source_filter=None):
     
     # Collect unique source filenames for the citations in our response
     sources = list(set(r[0] for r in results))
+
+    # One Citation per chunk sent to the LLM: numbered, with page and snippet
+    citations = [
+       {
+          "id":i,
+          "source": r[0],
+          "page":r[3],
+          "snippet": r[1][:300]
+       }
+       for i,r in enumerate(results, start=1)
+    ]
 
     # Step 4: Build the prompt and call the LLM
     # System = instructions for how the LLM should behave (our guadrail prompt)
@@ -73,11 +85,13 @@ def get_answer(question,source_filter=None):
     NOT_FOUND_PHRASES = ["couldn't find", "could not find", "not in the", "not found", "no information"]
     if any(phrase in answer.lower() for phrase in NOT_FOUND_PHRASES):
      sources = []
+     citations = []
     else:
      sources = list(set(r[0] for r in results))
  
     return {
         "answer":answer,
         "sources":sources,
+        "citations":citations,
         "top_score":round(top_score,3)
     }
