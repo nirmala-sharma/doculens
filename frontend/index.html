@@ -416,12 +416,55 @@
           overflow-x: auto;
           margin: 8px 0;
       }
-pre code {
-    color: #a5f3c0;
-    font-family: monospace;
-    font-size: 0.85rem;
-}
-    </style>
+      pre code {
+        color: #a5f3c0;
+        font-family: monospace;
+        font-size: 0.85rem;
+     }
+     .citation-snippet mark {
+            background: #a5b4fc33;
+            color: #e0e7ff;
+            padding: 0 2px;
+            border-radius: 3px;
+        }  
+    .citation-quote {
+         margin-top: 6px;
+            color: #e0e7ff;
+            font-style: italic;
+    }
+
+    .message-text .cite {
+        color: #a5b4fc;
+        font-size: 0.75em;
+        vertical-align: super;
+        text-decoration: none;
+        margin-left: 1px;
+    }
+    .message-text .cite:hover { text-decoration: underline; }
+
+    .citation-card {
+        background: #1e1e2e;
+        border: 1px solid #3a3a5c;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+    .citation-card summary {
+        cursor: pointer;
+        color: #a5b4fc;
+    }
+    .citation-snippet {
+        margin-top: 6px;
+        color: #bbb;
+        line-height: 1.5;
+    }
+    .citation-snippet mark, .citation-quote mark {
+        background: #a5b4fc33;
+        color: #e0e7ff;
+        padding: 0 2px;
+        border-radius: 3px;
+    }
+     </style>
 </head>
 <body>
 
@@ -685,20 +728,35 @@ async function askQuestion() {
         const row = document.createElement('div');
         row.className = 'message-row assistant';
 
-        const sourcesHtml = data.sources && data.sources.length
-            ? `<div class="sources-section">
-                <div class="sources-label">Sources</div>
-                <div class="source-tags">${data.sources.map(s =>
-                    `<span class="source-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${escapeHtml(s)}</span>`
-                ).join('')}</div>
-               </div>`
-            : '';
+        // Unique id for this answer, so [1] links point to this answer's cards
+        const msgId = Date.now();
+
+        // One expandable card per citation: "[1] file . page 7" , click to see the passage
+        let sourcesHtml = '';
+        if(data.citations && data.citations.length){
+            sourcesHtml = `<div class="sources-section">
+                <div class = "sources-label">Citations</div>
+                ${data.citations.map(c=>`
+                <details class="citation-card" id="cite-${msgId}-${c.id}">
+                  <summary>[${c.id}] ${escapeHtml(c.source)}${c.page ? ` · page ${c.page}` : ''}
+                  ${c.quote ? `<div class="citation-quote">"${highlightTerms(c.quote, question)}"</div>` : ''}                 
+                   </summary>
+                  <div class="citation-snippet">${highlightTerms(c.snippet, question)}</div>
+                </details>`).join('')}
+               </div>`;
+        }
+
+        // Turn [1] in the answer into a clickable link to its citation card
+        const answerHtml = renderMarkdown(data.answer).replace(
+            /\[(\d+)]/g,
+            (match,n)=>`<a href="#" class="cite" onclick="openCitation('cite-${msgId}-${n}'); return false;">[${n}]</a>`
+        );
 
         row.innerHTML = `
             <div class="message-inner">
                 <div class="avatar assistant">✦</div>
                 <div class="message-content">
-                    <div class="message-text">${renderMarkdown(data.answer)}</div>
+                    <div class="message-text">${answerHtml}</div>
                     ${sourcesHtml}
                     <div class="score-text">Confidence: ${data.top_score}</div>
                 </div>
@@ -718,6 +776,26 @@ async function askQuestion() {
 
 function escapeHtml(str) {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function highlightTerms(text, question) {
+    // Words from the question worth highlighting (4+ letters)
+    // Skip common filler words so only meaningful terms are highlighted
+    const stopWords = ['about', 'tell', 'what', 'which', 'does', 'with', 'that', 'this', 'from', 'have', 'there'];
+    const terms = (question.toLowerCase().match(/[a-z0-9]{4,}/g) || [])
+                    .filter(t => !stopWords.includes(t));
+    let html = escapeHtml(text);                // escape FIRST (XSS protection)
+    terms.forEach(term => {
+        const pattern = new RegExp(`(${term})`, 'gi');
+        html = html.replace(pattern, '<mark>$1</mark>');
+    });
+    return html;
+}
+
+function openCitation(id){
+    const card = document.getElementById(id);
+    if(!card) return;
+    card.open = true;                                          // expand the passage
+    card.scrollIntoView({behavior: 'smooth', block: 'center' });
 }
 </script>
 </body>

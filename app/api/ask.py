@@ -1,7 +1,7 @@
 import os
 from groq import Groq
 from dotenv import load_dotenv
-from app.api.search import rerank_chunks, search_chunks
+from app.api.search import rerank_chunks, search_chunks, reranker
 import re
 
 # Load environment variables from .env file
@@ -14,24 +14,38 @@ def get_client():
     # It automatically picks up GROQ_API_KEY from environment
     return Groq(api_key=os.environ["GROQ_API_KEY"])
 
-def validate_citations(answer,citations):
-   # Some models write 【1】 or 【1†...】 instead of [1] - convert to [1]
-   answer = re.sub(r"【(\d+)[^】]*】", r"[\1]", answer)
-   valid_ids = {c["id"] for c in citations}
-   # Find every [number] the LLM wrote in its answer
-   cited_ids = {int(n) for n in re.findall(r"\[(\d+)\]",answer)}
+def validate_citations(answer, citations):
+    # Some models write 【1】 or 【1†...】 instead of [1] - convert to [1]
+    answer = re.sub(r"【(\d+)[^】]*】", r"[\1]", answer)
+    valid_ids = {c["id"] for c in citations}
 
-   # Remove citation numbers that don't exist (made up by the LLM)
-   for bad_id in cited_ids - valid_ids:
-      answer = answer.replace(f"[{bad_id}]","")
+    # Find every [number] the LLM wrote in its answer
+    cited_ids = {int(n) for n in re.findall(r"\[(\d+)\]", answer)}
+
+    # Remove citation numbers that don't exist (made up by the LLM)
+    for bad_id in cited_ids - valid_ids:
+        answer = answer.replace(f"[{bad_id}]", "")
 
     # Return only the citations the answer actually used
-   used_ids = cited_ids & valid_ids
-   if used_ids:
-    citations = [c for c in citations if c["id"] in used_ids]
-   return answer, citations
+    used_ids = cited_ids & valid_ids
+    if used_ids:
+        # Renumber used citations 1, 2, 3... (so the user never sees [2] alone)
+        new_number = {old: new for new, old in enumerate(sorted(used_ids), start=1)}
+        answer = re.sub(r"\[(\d+)\]",
+                        lambda m: f"[{new_number.get(int(m.group(1)), m.group(1))}]",
+                        answer)
+        citations = [dict(c, id=new_number[c["id"]]) for c in citations if c["id"] in used_ids]
+    return answer, citations
 
-
+def best_sentence(question, text):
+    # Split the chunk into sentences / bullet points
+    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+|\s*•\s*", text)
+                 if len(s.split()) >= 5]          # ignore tiny fragments
+    if not sentences:
+        return text[:300]                         # fallback: start of the chunk
+    # Reranker scores each sentence against the question; keep the best one
+    scores = list(reranker.rerank(question, sentences))
+    return sentences[scores.index(max(scores))]
 
 # guadrail check
 def get_answer(question,source_filter=None):
@@ -78,7 +92,8 @@ def get_answer(question,source_filter=None):
           "id":i,
           "source": r[0],
           "page":r[3],
-          "snippet": r[1][:300]
+          "snippet": r[1],
+          "quote": best_sentence(question, r[1])
        }
        for i,r in enumerate(results, start=1)
     ]
