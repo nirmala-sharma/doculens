@@ -3,160 +3,160 @@
         "id": 1,
         "question": "What is a NumPy array?",
         "passed": true,
-        "latency_ms": 1314,
-        "top_score": 0.391,
-        "answer": "A NumPy array is NumPy\u2019s fundamental data structure \u2013 a **multidimensional array** object. It stores"
+        "latency_ms": 1352,
+        "top_score": 0.519,
+        "answer": "A NumPy array (called an **ndarray**) is a multidimensional container that holds elements of a singl"
     },
     {
         "id": 2,
         "question": "How is a NumPy array different from a Python list?",
         "passed": true,
-        "latency_ms": 2414,
-        "top_score": 0.328,
-        "answer": "A NumPy array is a **homogeneous, multidimensional container** that stores its elements in one conti"
+        "latency_ms": 1356,
+        "top_score": 0.343,
+        "answer": "A NumPy array differs from a Python list in several key ways:\n\n- **Homogeneity**: Every element of a"
     },
     {
         "id": 3,
         "question": "What does the shape attribute of an array represent?",
         "passed": true,
-        "latency_ms": 2756,
-        "top_score": 0.306,
-        "answer": "The `shape` attribute is a tuple that describes how many elements the array contains along each of i"
+        "latency_ms": 1365,
+        "top_score": 0.296,
+        "answer": "The **shape** attribute of an array is a tuple of non\u2011negative integers that specifies the number of"
     },
     {
         "id": 4,
         "question": "What is broadcasting in NumPy?",
         "passed": true,
-        "latency_ms": 3712,
-        "top_score": 0.451,
-        "answer": "**Broadcasting in NumPy**  \nBroadcasting is NumPy\u2019s rule for allowing arithmetic operations between "
+        "latency_ms": 1464,
+        "top_score": 0.52,
+        "answer": "Broadcasting in NumPy is a mechanism that allows arithmetic and other element\u2011wise operations to be "
     },
     {
         "id": 5,
         "question": "What function creates an array filled with zeros?",
         "passed": true,
-        "latency_ms": 11199,
-        "top_score": 0.3,
-        "answer": "The function that creates an array filled with zeros is `np.zeros()`."
+        "latency_ms": 1050,
+        "top_score": 0.377,
+        "answer": "The function that creates an array filled with zeros is `np.zeros()`[2]."
     },
     {
         "id": 6,
         "question": "What is the dtype of a NumPy array?",
         "passed": true,
-        "latency_ms": 12424,
-        "top_score": 0.43,
-        "answer": "In NumPy, **`dtype`** is the data\u2011type descriptor that defines the type and size of each element in "
+        "latency_ms": 1568,
+        "top_score": 0.475,
+        "answer": "The dtype of a NumPy array is the data\u2011type specification of the elements it holds, accessible throu"
     },
     {
         "id": 7,
         "question": "What does np.reshape do?",
         "passed": true,
-        "latency_ms": 23956,
-        "top_score": 0.283,
-        "answer": "`np.reshape` changes the shape of an array.  \nIt returns a new array that is a view of the original "
+        "latency_ms": 2293,
+        "top_score": 0.351,
+        "answer": "np.reshape changes the shape of an array to the specified dimensions, returning a new array that con"
     },
     {
         "id": 8,
         "question": "What is a universal function (ufunc) in NumPy?",
         "passed": true,
-        "latency_ms": 6584,
-        "top_score": 0.537,
-        "answer": "A universal function (ufunc) in NumPy is a function that operates on `ndarray` objects in an element"
+        "latency_ms": 1969,
+        "top_score": 0.498,
+        "answer": "A ufunc (universal function) is a NumPy callable object that performs a basic element\u2011by\u2011element ope"
     },
     {
         "id": 9,
         "question": "What is the difference between copy and view in NumPy?",
         "passed": true,
-        "latency_ms": 12371,
-        "top_score": 0.354,
-        "answer": "**Copy vs. View in NumPy**\n\n| Feature | Copy | View |\n|---------|------|------|\n| **Underlying data*"
+        "latency_ms": 1568,
+        "top_score": 0.475,
+        "answer": "In NumPy, a *copy* and a *view* differ mainly in whether the array\u2019s data buffer is duplicated:\n\n* *"
     },
     {
         "id": 10,
         "question": "How do you index a 2D NumPy array?",
-        "passed": true,
-        "latency_ms": 17096,
-        "top_score": 0.327,
-        "answer": "In the document it shows that a 2\u2011D array is accessed with two indices inside one set of brackets:\n\n"
+        "passed": false,
+        "latency_ms": 1106,
+        "top_score": 0.363,
+        "answer": "I couldn't find this in the provided document."
     },
     {
         "id": 11,
         "question": "What does np.linspace do?",
         "passed": true,
-        "latency_ms": 18697,
-        "top_score": 0.334,
-        "answer": "`np.linspace` creates a one\u2011dimensional array of **equally spaced numbers** between a start and stop"
+        "latency_ms": 1416,
+        "top_score": 0.282,
+        "answer": "`np.linspace` creates an array of evenly\u2011spaced values over a specified interval.  \nIt takes a start"
     },
     {
         "id": 12,
         "question": "What is axis in NumPy operations?",
         "passed": true,
-        "latency_ms": 19601,
-        "top_score": 0.333,
-        "answer": "In NumPy, the **axis** keyword tells an operation which dimension of an array it should run along.  "
+        "latency_ms": 1296,
+        "top_score": 0.383,
+        "answer": "In NumPy, the term **axis** refers to a particular dimension of an array along which an operation is"
     },
     {
         "id": 13,
         "question": "What does np.concatenate do?",
         "passed": true,
-        "latency_ms": 8686,
-        "top_score": 0.258,
-        "answer": "np.concatenate joins together a sequence of arrays along a specified axis, producing a single array "
+        "latency_ms": 1529,
+        "top_score": 0.274,
+        "answer": "np.concatenate joins two or more arrays along an axis, producing a new array that contains the eleme"
     },
     {
         "id": 14,
         "question": "What is the purpose of np.arange?",
         "passed": true,
-        "latency_ms": 23068,
-        "top_score": 0.285,
-        "answer": "The `np.arange` function creates an array of evenly\u2011spaced values over a given interval.  \nYou suppl"
+        "latency_ms": 1882,
+        "top_score": 0.26,
+        "answer": "`np.arange` is used to create 1\u2011D NumPy arrays whose elements increase regularly by a specified step"
     },
     {
         "id": 15,
         "question": "What does the transpose operation do to an array?",
-        "passed": false,
-        "latency_ms": 10731,
-        "top_score": 0.29,
-        "answer": "I couldn't find this in the provided document."
+        "passed": true,
+        "latency_ms": 1562,
+        "top_score": 0.342,
+        "answer": "The transpose operation flips an array over its diagonal \u2013 it swaps the array\u2019s axes so that rows be"
     },
     {
         "id": 16,
         "question": "What is the weather in New York today?",
         "passed": true,
-        "latency_ms": 43,
-        "top_score": -0.054,
+        "latency_ms": 36,
+        "top_score": -0.003,
         "answer": "I couldn't find relevant information in the documentation."
     },
     {
         "id": 17,
         "question": "Who is the current president of the United States?",
         "passed": true,
-        "latency_ms": 31,
-        "top_score": -0.047,
+        "latency_ms": 42,
+        "top_score": -0.045,
         "answer": "I couldn't find relevant information in the documentation."
     },
     {
         "id": 18,
         "question": "What is the capital of France?",
         "passed": true,
-        "latency_ms": 35,
-        "top_score": -0.037,
+        "latency_ms": 38,
+        "top_score": -0.059,
         "answer": "I couldn't find relevant information in the documentation."
     },
     {
         "id": 19,
         "question": "How do I make pasta?",
         "passed": true,
-        "latency_ms": 36,
-        "top_score": 0.055,
+        "latency_ms": 31,
+        "top_score": 0.062,
         "answer": "I couldn't find relevant information in the documentation."
     },
     {
         "id": 20,
         "question": "What is the stock price of Apple?",
         "passed": true,
-        "latency_ms": 37,
-        "top_score": 0.044,
+        "latency_ms": 35,
+        "top_score": 0.019,
         "answer": "I couldn't find relevant information in the documentation."
     }
 ]
