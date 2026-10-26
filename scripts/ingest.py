@@ -1,3 +1,4 @@
+from app.api.search import model    # reuse the model already loaded in search.py
 from  pathlib import Path
 from fastembed import TextEmbedding
 from dotenv import load_dotenv
@@ -20,6 +21,7 @@ def extract_pages_from_pdf(file_bytes: bytes):
     with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
         for page_number, page in enumerate(pdf.pages,start=1):
             text = page.extract_text() or ""
+            page.close()
             if text.strip():                  # Skip empty pages
                 pages.append((page_number,text))
     return pages
@@ -27,11 +29,7 @@ def extract_pages_from_pdf(file_bytes: bytes):
 
 load_dotenv()  # Load environment variables from .env file
 
-# Load the model once - loading it takes a few seconds
-# so we do it once at the top, not inside every function
-model = TextEmbedding("BAAI/bge-small-en-v1.5")
-
-def chunk_text(text, chunk_size=300, overlap=50):
+def chunk_text(text, chunk_size=150, overlap=30):
   # split the entire document into individual words
   # "How are you doing today" -> ["How", "are", "you", "doing", "today"]
     words = text.split()

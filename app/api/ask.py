@@ -44,7 +44,7 @@ def best_sentence(question, text):
     if not sentences:
         return text[:300]                         # fallback: start of the chunk
     # Reranker scores each sentence against the question; keep the best one
-    scores = list(reranker.rerank(question, sentences))
+    scores = list(reranker.rerank(question, sentences, batch_size=8))
     return sentences[scores.index(max(scores))]
 
 # guadrail check
@@ -72,7 +72,7 @@ def get_answer(question,source_filter=None):
          "top_score": round(top_score, 3)
         }
     # Rerank the 20 candidates and keep the best 2
-    results = rerank_chunks(question, results, top_n=2)
+    results = rerank_chunks(question, results, top_n=3)
  
     # Step 3: Build context from the top chunks i.e. we will build the prompt
     # We join all 2 chunks into one block of text for the LLM
