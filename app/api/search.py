@@ -5,10 +5,10 @@ from fastembed.rerank.cross_encoder import TextCrossEncoder
 
 # Load the same embedding model we used during ingestion
 # It must be the same model so vectors are in the same "space"
-model = TextEmbedding("BAAI/bge-small-en-v1.5")
+model = TextEmbedding("BAAI/bge-small-en-v1.5", threads=2, enable_cpu_mem_arena=False)
 
 # reranker : reads (question, chunk) paris together and scores relevance
-reranker = TextCrossEncoder(model_name = "Xenova/ms-marco-MiniLM-L-6-v2")
+reranker = TextCrossEncoder(model_name = "Xenova/ms-marco-MiniLM-L-6-v2",threads=2, enable_cpu_mem_arena=False)
 
 def search_chunks(questions, top_K=20, source_filter=None):
     # Step 1: Convert the user's question into a vector(same way we converted the chunks)
@@ -29,7 +29,7 @@ def search_chunks(questions, top_K=20, source_filter=None):
     if source_filter:
         cursor.execute(
             """
-            SELECT source, content, 1 - (embedding <-> %s::vector) AS score
+            SELECT source, content, 1 - (embedding <-> %s::vector) AS score, page
             FROM documents
             WHERE source = %s
             ORDER BY embedding <-> %s::vector
@@ -68,7 +68,7 @@ def rerank_chunks(question, results, top_n=5):
     documents = [r[1] for r in results]
 
     # Reranker gives one relevance score per chunk (higher = more relevant)
-    rerank_scores = list(reranker.rerank(question, documents))
+    rerank_scores = list(reranker.rerank(question, documents, batch_size = 8))
 
     # Pair each result with its rerank score
     scored = list(zip(results,rerank_scores))
@@ -76,8 +76,8 @@ def rerank_chunks(question, results, top_n=5):
     # Sort by rerank score, best first
     scored.sort(key=lambda x:x[1],reverse=True)
 
-    # Keep top_n, return in the same (source, content, score) shape
-    return [(r[0],r[1],float(s)) for r,s in scored[:top_n]]
+    # Keep top_n, return in the same (source, content, score, page) shape
+    return [(r[0],r[1],float(s), r[3]) for r,s in scored[:top_n]]
 
 
     
