@@ -1,3 +1,4 @@
+from app.api.search import model    # reuse the model already loaded in search.py
 from  pathlib import Path
 from fastembed import TextEmbedding
 from dotenv import load_dotenv
@@ -13,13 +14,22 @@ def extract_text_from_pdf(file_bytes: bytes) -> str:
         for page in pdf.pages:
             text += page.extract_text() or ""
     return text
+
+def extract_pages_from_pdf(file_bytes: bytes):
+    # Returns a list of (page_number,text) one per page
+    pages = []
+    with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
+        for page_number, page in enumerate(pdf.pages,start=1):
+            text = page.extract_text() or ""
+            page.close()
+            if text.strip():                  # Skip empty pages
+                pages.append((page_number,text))
+    return pages
+
+
 load_dotenv()  # Load environment variables from .env file
 
-# Load the model once - loading it takes a few seconds
-# so we do it once at the top, not inside every function
-model = TextEmbedding("BAAI/bge-small-en-v1.5")
-
-def chunk_text(text, chunk_size=300, overlap=50):
+def chunk_text(text, chunk_size=150, overlap=30):
   # split the entire document into individual words
   # "How are you doing today" -> ["How", "are", "you", "doing", "today"]
     words = text.split()
@@ -52,13 +62,13 @@ def get_db_connection():
     # Read the database URL from environment variables and connect
     return psycopg2.connect(os.environ["DATABASE_URL"])
 
-def store_chunk(cursor,source,chunk_index,content,embedding):
+def store_chunk(cursor,source,chunk_index,content,embedding,page=None):
     # Insert one chunk and its embedding into the database
     cursor.execute(
         """
-        INSERT INTO documents (source, chunk_index, content, embedding)
-        VALUES (%s, %s, %s, %s)""",
-        (source,chunk_index,content,embedding)
+        INSERT INTO documents (source, chunk_index, content, embedding, page)
+        VALUES (%s, %s, %s, %s, %s)""",
+        (source,chunk_index,content,embedding,page)
     )
 
 def ingest_text(source: str, text: str):
@@ -69,6 +79,26 @@ def ingest_text(source: str, text: str):
     for i, chunk in enumerate(chunks):
         embedding = embed_text(chunk)
         store_chunk(cursor, source, i, chunk, embedding)
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def ingest_pdf(source: str, pages):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM documents WHERE source = %s",(source,))
+
+    chunk_index = 0
+
+    for page_number, page_text in pages:
+        # Chunk each page separately, sor every chunk belongs to one page
+        for chunk in chunk_text(page_text):
+            if len(chunk.split())<20:             # skip near-empty chunks (headers, page numbers)
+                continue
+            embedding = embed_text(chunk)
+            store_chunk(cursor, source, chunk_index, chunk, embedding, page_number)
+            chunk_index+=1
+
     conn.commit()
     cursor.close()
     conn.close()
