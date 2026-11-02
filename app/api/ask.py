@@ -3,6 +3,10 @@ from groq import Groq
 from dotenv import load_dotenv
 from app.api.search import rerank_chunks, search_chunks, reranker
 import re
+from app.api.agent import run_agent
+
+NOT_FOUND_PHRASES = ["couldn't find", "could not find", "not in the", "not found", "no information"]
+
 
 # Load environment variables from .env file
 # load_dotenv() 
@@ -120,7 +124,6 @@ def get_answer(question,source_filter=None):
     answer = response.choices[0].message.content
 
     # Clear sources if LLM couldn't find the answer in context
-    NOT_FOUND_PHRASES = ["couldn't find", "could not find", "not in the", "not found", "no information"]
     if any(phrase in answer.lower() for phrase in NOT_FOUND_PHRASES):
      sources = []
      citations = []
@@ -133,3 +136,32 @@ def get_answer(question,source_filter=None):
         "citations":citations,
         "top_score":round(top_score,3)
     }
+
+def get_agent_answer(question, source_filter = None):
+    answer, passages = run_agent(question, source_filter)
+
+    # The agent found nothing at all
+    if not passages:
+        return {
+            "answer":"I couldn't find relevant information in the documentation.",
+            "sources":[],"citations":[],"top_score":None }
+
+    # The LLM said the answer isn't in the document
+    if any(phrase in answer.lower() for phrase in NOT_FOUND_PHRASES):
+            return {"answer": answer, "sources":[],"citations":[],"top_score":None}
+
+        # One citation per passage the agent saw (numbered 1,2,3 ... like in the tool results)
+    citations = [
+            {"id":i, "source":p["source"],"page":p["page"],"snippet":p["text"]}
+            for i, p in enumerate(passages, start=1)
+        ]
+
+    # Same checks as the normal pipeline: fix 【1】, remove fake numbers, keep used ones, renumber
+    answer, citations = validate_citations(answer, citations)
+
+    # Pick the exact supporting quote, only for the citations actually used
+    for c in citations:
+            c["quote"] = best_sentence(question, c["snippet"])
+
+    sources = list(set(c["source"] for c in citations))
+    return {"answer":answer, "sources": sources, "citations": citations, "top_score":None}

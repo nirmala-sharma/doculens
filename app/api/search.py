@@ -40,7 +40,7 @@ def search_chunks(questions, top_K=20, source_filter=None):
     else:
         cursor.execute(
             """
-            SELECT source, content, 1 - (embedding <-> %s::vector) AS score
+            SELECT source, content, 1 - (embedding <-> %s::vector) AS score, page
             FROM documents
             ORDER BY embedding <-> %s::vector
             LIMIT %s
