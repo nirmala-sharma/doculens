@@ -117,7 +117,8 @@ def get_answer(question,source_filter=None):
                 "role":"user",
                 "content":f"<document>\n{context}\n</document>\n\nQuestion:{question}"
             }
-        ]
+        ],
+        temperature=0.2   # low = consistent, factual and high = random, surprising 
     )
 
     # Step 5: Extract the answer text from the response and return everything

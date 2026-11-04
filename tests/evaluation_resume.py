@@ -5,9 +5,11 @@ import requests
 
 BASE_URL = "http://localhost:8000"  # address of API
 SOURCE = "Nirmala_Sharma_Resume_SoftwareEngineering.pdf"        # name stored in the database
-PDF_PATH = "Nirmala_Sharma_Resume_SoftwareEngineering.pdf"          # path to find the file on disk
+PDF_PATH = "Nirmala_Sharma_Resume_SoftwareEngineering.pdf"      # path to find the file on disk
 AUTO_UPLOAD = True
-RUN_LABEL = "pipeline"     # change to "agent" after the agent is built
+USE_AGENT = True
+RUN_LABEL = "agent" if USE_AGENT else "pipeline"       # file name 
+
 
 # ( question, expected keywords, mode, should_answer)
 # mode "any"= at least one keyword must appear in the answer
@@ -48,7 +50,7 @@ def upload_pdf():
 
 def ask(question):
     start = time.time()
-    r = requests.post(f"{BASE_URL}/ask", json = {"question": question, "source": SOURCE},timeout=60)
+    r = requests.post(f"{BASE_URL}/ask", json = {"question": question, "source": SOURCE, "use_agent": USE_AGENT},timeout=120)
     latency = round((time.time() - start)*1000)
     return r.json(), latency
 

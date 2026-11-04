@@ -81,7 +81,7 @@ def run_agent(question, source_filter):
    for step in range(MAX_TOOL_CALLS):
       #1. Ask the LLM what to do next (it can call a tool or answer)
       response = get_client().chat.completions.create(
-         model = MODEL, messages = messages, tools = TOOLS, tool_choice="auto", max_tokens=1000
+         model = MODEL, messages = messages, tools = TOOLS, tool_choice="auto", max_tokens=1000, temperature = 0.2
         )
       message = response.choices[0].message
       print("Text answer:", message.content)
@@ -125,7 +125,7 @@ def run_agent(question, source_filter):
                 "or say you couldn't find it. ",
 
    })
-   response = get_client().chat.completions.create(model=MODEL, messages = message, max_tokens = 1000)
+   response = get_client().chat.completions.create(model=MODEL, messages = messages, max_tokens = 1000, tools = TOOLS, tool_choice="none")
    return response.choices[0].message.content or "", passages
 
       
