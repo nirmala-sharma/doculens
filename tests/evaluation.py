@@ -3,9 +3,11 @@ import time
 import json
 
 BASE_URL = "http://localhost:8000"
-SOURCE = "numpy-user.pdf" # name stored in the database
-PDF_PATH = "numpy-user.pdf"  # path to find the file on disk
+SOURCE = "numpy-user.pdf"      # name stored in the database
+PDF_PATH = "numpy-user.pdf"    # path to find the file on disk
 AUTO_UPLOAD = True
+USE_AGENT = True               # True = agent, False = normal pipeline
+RESULTS_FILE = "evaluation_results_agent.json" if USE_AGENT else "evaluation_results.json"
 
 # Each tuple has 3 things:
 
@@ -89,9 +91,9 @@ def upload_pdf(pdf_path):
     print(f"{r.json().get('message', 'Upload successful')}")
   
 def ask(question):
-    payload = {"question": question, "source": SOURCE}
+    payload = {"question": question, "source": SOURCE, "use_agent": USE_AGENT}
     start = time.time()
-    response = requests.post(f"{BASE_URL}/ask", json=payload,timeout=30)
+    response = requests.post(f"{BASE_URL}/ask", json=payload,timeout=120)
     latency = round((time.time() - start) * 1000)
     return response.json(),latency
 
@@ -114,16 +116,15 @@ def run_eval():
 
     for i, (question, keywords, should_answer) in enumerate(TEST_CASES, 1):  # loops with index starting at 1
         resp, latency = ask(question)
-        time.sleep(10)
+        time.sleep(30)       #  pauses the evaluation for 10 seconds after each question, before asking the next one. Stay under the Groq free-tier rate limit
         answer = resp["answer"]
         sources = resp["sources"]
         score = resp["top_score"]
-        print(f"   Answer: {answer[:150]}")
+        print(f"{i}. {tag} ({latency} ms) (score: {score}) {question}")
 
         passed = check_answer(answer, keywords, should_answer, sources)
         tag = "✅" if passed else "❌"
-
-        print(f"{i}. {tag} ({latency} ms) (score: {score}) {question}")
+        print(f"   Answer: {answer[:150]}")
 
         if passed:
             passed_count += 1
@@ -141,11 +142,12 @@ def run_eval():
     print(f"Passed: {passed_count}/{total_count}")
     print(f"Score: {round(passed_count / total_count * 100)}%")
 
-    with open("evaluation_results.json", "w") as f:
+    with open(RESULTS_FILE, "w") as f:
         json.dump(results, f, indent=4)
-    print(f"Results saved to evaluation_results.json")
+    print(f"Results saved to {RESULTS_FILE}")
 
  
-run_eval()
+if __name__ == "__main__":
+    run_eval()
 
     

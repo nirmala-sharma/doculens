@@ -14,7 +14,7 @@ async def lifespan(app):
 
 app = FastAPI(
     title="Doculens",
-    description="Citation-first RAG assistant for developer documentation",
+    description="Citation-first RAG assistant for PDF documents",
     version="0.1.0",
     lifespan=lifespan
 )

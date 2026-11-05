@@ -139,8 +139,13 @@ def get_answer(question,source_filter=None):
     }
 
 def get_agent_answer(question, source_filter = None):
-    answer, passages = run_agent(question, source_filter)
-
+    try:
+        answer, passages = run_agent(question, source_filter)
+    except Exception as e:
+        print(f"[agent] error: {e}")
+        return {"answer": "The AI service is busy right now. Please try again in a moment.",
+                "sources": [], "citations": [], "top_score": None}  
+    
     # The agent found nothing at all
     if not passages:
         return {

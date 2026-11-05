@@ -9,7 +9,7 @@ MODEL = "openai/gpt-oss-20b"
 
 
 def get_client():
-    return Groq(api_key=os.environ["GROQ_API_KEY"])
+    return Groq(api_key=os.environ["GROQ_API_KEY"], max_retries=5)
 
 
 SYSTEM_PROMPT = (
@@ -84,8 +84,6 @@ def run_agent(question, source_filter):
          model = MODEL, messages = messages, tools = TOOLS, tool_choice="auto", max_tokens=1000, temperature = 0.2
         )
       message = response.choices[0].message
-      print("Text answer:", message.content)
-      print("Tool request:", message.tool_calls)
 
       # 2. No tool requested -> this is the final answer
       if not message.tool_calls:
