@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+.env
+.git/
+*.pdf
+docs/raw
+evaluation_*.json
