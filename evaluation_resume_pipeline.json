@@ -1,0 +1,165 @@
+{
+  "label": "pipeline",
+  "date": "2026-10-27 17:18",
+  "answered": "7/11",
+  "grounded": "7/11",
+  "results": [
+    {
+      "id": 1,
+      "question": "What did Nirmala contribute to Center Randomize?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 888,
+      "top_score": 0.155,
+      "answer": "Nirmala contributed four merged pull requests to Center Randomize that fixed a command‑line crash, added school/center search functionality, and corrected the map display. [1]",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "Center Randomize — Open-Source Contribution, Nepal Ministry of Education GitHub Python, Streamlit"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "question": "What is Ghost charges?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 1377,
+      "top_score": 0.19,
+      "answer": "Ghost Charges is a full‑stack application that parses bank‑statement PDFs, identifies recurring (subscription‑style) charges, and presents the results in a React + TypeScript dashboard while ensuring no financial data is stored. The backend is built with Python and FastAPI, the frontend with React and TypeScript, and it includes 37 pytest tests to validate its functionality [1][2].",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "Ghost Charges — Subscription Detector for Bank Statements GitHub Python, FastAPI, React, TypeScript, pytest"
+        },
+        {
+          "page": 1,
+          "quote": "Ghost Charges — Subscription Detector for Bank Statements GitHub Python, FastAPI, React, TypeScript, pytest"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "question": "What is LogSignals?",
+      "passed": false,
+      "grounded": false,
+      "latency_ms": 31,
+      "top_score": 0.097,
+      "answer": "I couldn't find relevant information in the documentation.",
+      "citations": []
+    },
+    {
+      "id": 4,
+      "question": "What accuracy did Digit Detective achieve?",
+      "passed": false,
+      "grounded": false,
+      "latency_ms": 26,
+      "top_score": 0.068,
+      "answer": "I couldn't find relevant information in the documentation.",
+      "citations": []
+    },
+    {
+      "id": 5,
+      "question": "How many JUnit tests does LogSignals have?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 1087,
+      "top_score": 0.162,
+      "answer": "LogSignals includes **25 JUnit tests**[1].",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "JavaRESTAPIthatingestsapplicationlogs,flagsper-serviceerrorspikesabovetherollingmean+2standarddeviations,andgroups them into incidents with alerts; 25 JUnit tests."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "question": "How many pytest tests does Ghost Charges have?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 1947,
+      "top_score": 0.306,
+      "answer": "Ghost Charges has **37 pytest tests**[1].",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "Full-stack app: a Python API parses bank-statement PDFs across bank layouts and detects recurring charges, shown in a React + TypeScript dashboard; 37 pytest tests, and financial data is never stored."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "question": "Which projects use FastAPI?",
+      "passed": false,
+      "grounded": false,
+      "latency_ms": 1670,
+      "top_score": 0.197,
+      "answer": "The projects that use FastAPI are **DocuLens** and **Ghost Charges** [1].",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "PROJECTS & OPEN SOURCE DocuLens — Citation-First LLM Application (RAG) GitHub | Live demo Python, FastAPI, Groq LLM API, embeddings, PostgreSQL/pgvector, Docker, GitHub Actions"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "question": "Which certifications does Nirmala have?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 940,
+      "top_score": 0.174,
+      "answer": "Nirmala holds the following certifications: IBM – Python for Data Science, AI & Development; Google – GenAI Prompt Engineering [1].",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "Certifications: IBM – Python for Data Science, AI & Development; Google – GenAI Prompt Engineering ACTIVITIES & INTERESTS"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "question": "which programming languages does Nirmala know?",
+      "passed": false,
+      "grounded": false,
+      "latency_ms": 1271,
+      "top_score": 0.209,
+      "answer": "Nirmala is proficient in the following programming languages:\n\n- **C#** – used for full‑stack development at Imark Digital [1]\n- **Python** – used for FastAPI, Flask, AI/ML projects, and the Digit Detective app [2][3]\n- **Java** – used in the LogSignals API and other backend components [2][3]\n- **JavaScript** – used with React and Angular in front‑end development [2]\n- **TypeScript** – used in the Ghost Charges project [3]",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "Nirmala Sharma sharman1@newpaltz.edu | +1 (860) 254-2406 | New Paltz, NY linkedin.com/in/nirmala-sharmaa | github.com/nirmala-sharma | nirmala-sharma.github.io/MyPortfolio EDUCATION State University of New York at New Paltz New Paltz, NY M.S."
+        },
+        {
+          "page": 1,
+          "quote": "Databases & Tools: PostgreSQL, MS SQL Server, MySQL; Git, Docker, GitHub Actions (CI/CD), Linux, JIRA; pytest, JUnit; Claude Code, GitHub Copilot"
+        },
+        {
+          "page": 1,
+          "quote": "Ghost Charges — Subscription Detector for Bank Statements GitHub Python, FastAPI, React, TypeScript, pytest"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "question": "What is Nirmala's salary expectation?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 825,
+      "top_score": 0.152,
+      "answer": "I couldn't find this in the provided document.",
+      "citations": []
+    },
+    {
+      "id": 11,
+      "question": "What is Nirmala's favorite movie?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 31,
+      "top_score": 0.006,
+      "answer": "I couldn't find relevant information in the documentation.",
+      "citations": []
+    }
+  ]
+}

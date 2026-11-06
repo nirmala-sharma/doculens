@@ -1,0 +1,195 @@
+{
+  "label": "agent",
+  "date": "2026-11-04 13:07",
+  "answered": "11/11",
+  "grounded": "11/11",
+  "results": [
+    {
+      "id": 1,
+      "question": "What did Nirmala contribute to Center Randomize?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 1838,
+      "top_score": null,
+      "answer": "Nirmala contributed to the Center Randomize project by merging four pull requests that fixed a command‑line crash, added school/center search functionality, and corrected the map display. [1]",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "Center Randomize — Open-Source Contribution, Nepal Ministry of Education GitHub Python, Streamlit"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "question": "What is Ghost charges?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 3548,
+      "top_score": null,
+      "answer": "Ghost Charges is a full‑stack application that serves as a **subscription detector for bank statements**. It uses a Python API to parse PDFs of bank statements from various layouts, identifies recurring charges, and presents the results in a React + TypeScript dashboard. The project includes 37 pytest tests and ensures that financial data is never stored. [1]",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "Ghost Charges — Subscription Detector for Bank Statements GitHub Python, FastAPI, React, TypeScript, pytest"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "question": "What is LogSignals?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 1780,
+      "top_score": null,
+      "answer": "LogSignals is a **Log Monitoring & Anomaly Detection API** built with Java, Spring Boot, PostgreSQL, JWT, and JUnit. It processes application logs, flags error spikes that exceed a rolling mean plus two standard deviations per service, and groups these spikes into incidents that trigger alerts. The project includes 25 JUnit tests to validate its functionality. [1]",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "LogSignals — Log Monitoring & Anomaly Detection API GitHub Java, Spring Boot, PostgreSQL, JWT, JUnit"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "question": "What accuracy did Digit Detective achieve?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 1159,
+      "top_score": null,
+      "answer": "Digit Detective achieved an accuracy of **98.94 %** on the held‑out MNIST test set, compared to 96.75 % for a fully connected baseline. [1]",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "Digit Detective — Handwritten Digit Recognition GitHub | Live demo Python, PyTorch, CNN, Flask"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "question": "How many JUnit tests does LogSignals have?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 1377,
+      "top_score": null,
+      "answer": "LogSignals has **25 JUnit tests**[1].",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "JavaRESTAPIthatingestsapplicationlogs,flagsper-serviceerrorspikesabovetherollingmean+2standarddeviations,andgroups them into incidents with alerts; 25 JUnit tests."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "question": "How many pytest tests does Ghost Charges have?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 1675,
+      "top_score": null,
+      "answer": "Ghost Charges has **37 pytest tests**[1]",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "Full-stack app: a Python API parses bank-statement PDFs across bank layouts and detects recurring charges, shown in a React + TypeScript dashboard; 37 pytest tests, and financial data is never stored."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "question": "Which projects use FastAPI?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 6982,
+      "top_score": null,
+      "answer": "The projects that use FastAPI are:\n\n- **DocuLens** – a citation‑first LLM application that uses Python and FastAPI for its API layer.  \n- **Ghost Charges** – a subscription‑detector app whose back‑end is a Python API built with FastAPI.  \n\nBoth are listed in the project section of the résumé. ",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "APIs, FastAPI, Spring Boot, .NET Core, Flask; React, Angular, HTML/CSS"
+        },
+        {
+          "page": 1,
+          "quote": "PROJECTS & OPEN SOURCE DocuLens — Citation-First LLM Application (RAG) GitHub | Live demo Python, FastAPI, Groq LLM API, embeddings, PostgreSQL/pgvector, Docker, GitHub Actions"
+        },
+        {
+          "page": 1,
+          "quote": "Backend & Frontend: REST APIs, FastAPI, Spring Boot, .NET Core, Flask; React, Angular, HTML/CSS"
+        },
+        {
+          "page": 1,
+          "quote": "PROJECTS & OPEN SOURCE DocuLens — Citation-First LLM Application (RAG) GitHub | Live demo Python, FastAPI, Groq LLM API, embeddings, PostgreSQL/pgvector, Docker, GitHub Actions"
+        },
+        {
+          "page": 1,
+          "quote": "APIs, FastAPI, Spring Boot, .NET Core, Flask; React, Angular, HTML/CSS"
+        },
+        {
+          "page": 1,
+          "quote": "Backend & Frontend: REST APIs, FastAPI, Spring Boot, .NET Core, Flask; React, Angular, HTML/CSS"
+        },
+        {
+          "page": 1,
+          "quote": "PROJECTS & OPEN SOURCE DocuLens — Citation-First LLM Application (RAG) GitHub | Live demo Python, FastAPI, Groq LLM API, embeddings, PostgreSQL/pgvector, Docker, GitHub Actions"
+        },
+        {
+          "page": 1,
+          "quote": "APIs, FastAPI, Spring Boot, .NET Core, Flask; React, Angular, HTML/CSS"
+        },
+        {
+          "page": 1,
+          "quote": "Backend & Frontend: REST APIs, FastAPI, Spring Boot, .NET Core, Flask; React, Angular, HTML/CSS"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "question": "Which certifications does Nirmala have?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 3484,
+      "top_score": null,
+      "answer": "Nirmala has earned the following certifications:  \n- IBM – Python for Data Science, AI & Development  \n- Google – GenAI Prompt Engineering[1]",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "Certifications: IBM – Python for Data Science, AI & Development; Google – GenAI Prompt Engineering ACTIVITIES & INTERESTS"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "question": "which programming languages does Nirmala know?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 2285,
+      "top_score": null,
+      "answer": "Nirmala knows the following programming languages: Python, Java, TypeScript/JavaScript, C#, and SQL[1].",
+      "citations": [
+        {
+          "page": 1,
+          "quote": "Languages: Python, Java, TypeScript/JavaScript, C#, SQL"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "question": "What is Nirmala's salary expectation?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 7653,
+      "top_score": null,
+      "answer": "I couldn't find this in the provided document.",
+      "citations": []
+    },
+    {
+      "id": 11,
+      "question": "What is Nirmala's favorite movie?",
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 9548,
+      "top_score": null,
+      "answer": "I couldn't find this in the provided document.",
+      "citations": []
+    }
+  ]
+}
