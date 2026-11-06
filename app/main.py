@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from app.api.ask import get_answer
+from app.api.ask import get_answer, get_agent_answer
 from scripts.ingest import extract_pages_from_pdf, ingest_pdf
 from typing import Optional
 from contextlib import asynccontextmanager
@@ -14,7 +14,7 @@ async def lifespan(app):
 
 app = FastAPI(
     title="Doculens",
-    description="Citation-first RAG assistant for developer documentation",
+    description="Citation-first RAG assistant for PDF documents",
     version="0.1.0",
     lifespan=lifespan
 )
@@ -42,12 +42,13 @@ def health_check():
 class AskRequest(BaseModel):  # inherits from BaseModel — gets validation, type checking, auto JSON parsing
     question: str
     source: Optional[str] = None
+    use_agent: bool = False   # True = agent, False = normal pipeline
 
 @app.post("/ask")
 def ask(request: AskRequest):
-    # Call get_answer with the question from the request body
-    result = get_answer(request.question, source_filter=request.source)
-    return result
+    if request.use_agent:
+        return get_agent_answer(request.question, source_filter=request.source)
+    return get_answer(request.question, source_filter=request.source)
 
 @app.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):
