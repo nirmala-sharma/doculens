@@ -1,12 +1,18 @@
+<div align="center">
+
 # 🔍 DocuLens — Citation-First RAG Document Copilot
 
-> Upload any PDF and ask questions about it. Get answers with source citations, not hallucinations.
+**Upload any PDF and ask questions about it. Get answers with source citations, not hallucinations.**
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue?style=flat-square&logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green?style=flat-square&logo=fastapi)
 ![PostgreSQL](https://img.shields.io/badge/pgvector-PostgreSQL-blue?style=flat-square&logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker)
 ![CI](https://img.shields.io/github/actions/workflow/status/nirmala-sharma/doculens/ci.yml?style=flat-square&label=CI)
+
+🔗 **Live Demo:** [brilliant-beijinho-a6069f.netlify.app](https://brilliant-beijinho-a6069f.netlify.app/)
+
+</div>
 
 ---
 
@@ -16,6 +22,8 @@ DocuLens is a **Retrieval-Augmented Generation (RAG)** system that lets you chat
 
 You upload a PDF. You ask: *"What projects did this person work on?"*
 DocuLens finds the most relevant passages in your document, reranks them for accuracy, and passes the best ones to an LLM. Every fact in the answer is cited inline like **[1]**, with the **page number and the exact supporting quote**, so you can verify it yourself. If the document doesn't contain the answer, DocuLens says so instead of guessing.
+
+**Agent mode:** for hard questions, DocuLens can run as an AI agent. Instead of searching once with your exact words, the LLM decides what to search for and can search again with different words (up to 3 times) before answering.
 
 > ⚠️ **Privacy Notice:** Do not upload confidential or sensitive documents. Uploaded content is stored on the server for querying purposes.
 
@@ -62,6 +70,31 @@ Return answer + citations (file, page, exact supporting quote) + relevance score
 
 **Citations you can verify:** for each citation, the reranker picks the single sentence that best supports the answer, so users see the exact quote and the page it came from.
 
+### Agent mode
+
+```
+User asks a question (Agent mode on)
+│
+▼
+LLM reads the question and decides what to search for
+│
+├── calls search_documents("its own search words")
+│      → vector search (top 20) → relevance check → rerank → best 3 passages
+│      → if nothing relevant: "No relevant passages found. Try different words."
+│      → results go back to the LLM
+│
+├── searches again with different words if needed (max 3 rounds)
+│
+▼
+LLM answers from the passages, citing [1], [2]
+(after 3 rounds, the answer is forced with tools turned off)
+│
+▼
+Same citation validation and exact quotes as the normal pipeline
+```
+
+The LLM never runs anything itself: it only *asks* for a search, and my code runs it. The search tool is read-only, and my code (not the LLM) decides which document is searched.
+
 ---
 
 ## Tech Stack
@@ -72,11 +105,11 @@ Return answer + citations (file, page, exact supporting quote) + relevance score
 | Vector DB | PostgreSQL + pgvector | Vector search next to regular data (file name, page), no extra infrastructure |
 | Embeddings | fastembed (BAAI/bge-small-en-v1.5) | Lightweight, high quality, runs inside the container |
 | Reranker | fastembed cross-encoder (Xenova/ms-marco-MiniLM-L-6-v2) | Re-scores the top 20 passages for accuracy; same library, no new dependency |
-| LLM | Groq (openai/gpt-oss-20b) | Fast inference, OpenAI-compatible API |
+| LLM | Groq (openai/gpt-oss-20b) | Fast inference, OpenAI-compatible API, supports tool calling for the agent |
 | PDF parsing | pdfplumber | Page-by-page text extraction for page-level citations |
 | Frontend | Vanilla HTML/CSS/JS | Zero dependencies, instant load |
 | Container | Docker Compose | Reproducible dev environment |
-| Testing | pytest + 20-question evaluation suite | Unit tests for logic; evaluation for answer quality |
+| Testing | pytest + two evaluation suites | Unit tests (with a fake LLM for the agent); evaluations for answer quality |
 | CI | GitHub Actions | Runs the tests on every push and pull request |
 | Hosting | Render (API) + Netlify (frontend) | Free-tier deployment |
 
@@ -89,6 +122,7 @@ Return answer + citations (file, page, exact supporting quote) + relevance score
 - **Clickable citations** — click [1] to open the full passage, with your question's key terms highlighted
 - **Citation validation** — made-up citation numbers are removed, and only the citations actually used are shown, numbered 1, 2, 3...
 - **Reranking** — a cross-encoder re-scores the top 20 search results, so the LLM gets the 3 most relevant passages
+- **Agent mode** — an optional tool-calling agent that rewrites and repeats searches when the first one is weak (up to 3 rounds); toggle it with "Agent mode" in the chat
 - **Similarity guardrail** — refuses to answer when the document doesn't contain relevant content
 - **Source filtering** — answers come only from the document you uploaded, not mixed with others
 - **Multiple file support** — upload several PDFs and query across all of them
@@ -96,7 +130,7 @@ Return answer + citations (file, page, exact supporting quote) + relevance score
 - **Prompt-injection mitigation** — document text is clearly separated from instructions, and the model is told never to follow instructions inside it
 - **Safe display** — PDF text is escaped before it's shown in the browser, preventing script injection (XSS)
 - **Automatic database setup** — the table, columns, and pgvector extension are created on startup
-- **Memory-efficient** — runs in about 400 MB, fitting a 512 MB free-tier server
+- **Memory-efficient** — runs in about 400 MB (including Agent mode), fitting a 512 MB free-tier server
 - **Chat-style UI** — dark interface with Markdown rendering and a typing indicator
 
 ---
@@ -106,7 +140,7 @@ Return answer + citations (file, page, exact supporting quote) + relevance score
 Real problems found through testing, and how they were fixed.
 
 **1. An improvement that made things worse — and why**
-Adding reranking first *dropped* the evaluation score from 20/20 to 16/20. Logging what the LLM actually received showed two problems: chunks were ~4,500 characters but the context limit was 4,000, so the LLM only saw part of one chunk; and the reasoning model's thinking used the whole 500-token budget, leaving empty answers. Fixing both restored the score.
+After adding reranking, the evaluation score *dropped* from 20/20 to 16/20. Logging what the LLM actually received showed two problems: chunks were ~4,500 characters but the context limit was 4,000, so the LLM only saw part of one chunk; and the reasoning model's thinking used the whole 500-token budget, leaving empty answers. Fixing both restored the score.
 
 | Change | Eval score |
 |---|---|
@@ -131,6 +165,18 @@ The model sometimes cited passages in its own trained format (`【1】`) instead
 
 **4. A trade-off: chunk size**
 Smaller chunks made citations more precise but gave the LLM less context (20 → 18). Since smaller chunks use fewer tokens, sending 3 instead of 2 restored 20/20 while keeping the precise citations.
+
+**5. An agent built to fix measured failures**
+The NumPy evaluation scored 20/20, but a harder test on a resume scored 8/11: questions about rare project names (e.g. "What is LogSignals?" scored 0.097, just under the threshold) and a broad question failed because the pipeline searches only once, using the user's exact words. A tool-calling agent that can change the search words and try again fixed all three, without breaking the original set.
+
+| | Pipeline | Agent |
+|---|---|---|
+| Resume evaluation (11 harder questions) | 8/11 | **11/11** |
+| NumPy evaluation (20 questions) | 20/20 | **20/20** |
+| Avg answer time (NumPy) | ~2.7 s | ~4.7 s |
+| Avg refusal time (NumPy) | ~35 ms | ~2.8 s |
+
+The trade-off is speed: the agent tries several searches before refusing, and each round resends earlier results, which can hit Groq's free-tier limit (8,000 tokens/min). That's handled with automatic retries and a clear "service busy" message instead of a crash. Testing also found two bugs in the step-limit code path, now covered by unit tests with a fake LLM.
 
 ---
 
@@ -167,6 +213,17 @@ Tested against the [NumPy User Guide](https://numpy.org/doc/stable/numpy-user.pd
 > **Out-of-scope questions:** refused in ~35 ms average, because the guardrail stops them before the LLM is called.
 > **Trade-off:** the memory optimizations (no ONNX memory pool, smaller rerank batches) raised average latency from ~1.4 s to ~2.7 s, in exchange for fitting a 512 MB server.
 
+### Agent mode and the harder resume evaluation
+
+A second suite (`tests/evaluation_resume.py`) uses 11 harder questions on a resume: rare names, exact numbers, broad questions, and questions that must be refused. It also checks that the expected facts appear in the **cited passages**, not just the answer.
+
+| Suite | Pipeline | Agent |
+|---|---|---|
+| NumPy (20 questions) | 20/20 | 20/20 |
+| Resume (11 questions) | 8/11 | 11/11 |
+
+Each suite was run once; LLM results can vary slightly between runs. Set `USE_AGENT = True` or `False` at the top of either script to choose the mode.
+
 **To reproduce:**
 1. Download [numpy-user.pdf](https://numpy.org/doc/stable/numpy-user.pdf) and place it in the project root
 2. Start the backend with `docker compose up -d`
@@ -179,23 +236,28 @@ Tested against the [NumPy User Guide](https://numpy.org/doc/stable/numpy-user.pd
 doculens/
 ├── app/
 │   ├── api/
-│   │   ├── ask.py          # RAG pipeline: search → guardrail → rerank → LLM → citation validation
-│   │   └── search.py       # Vector search (pgvector), reranking, page lookup
+│   │   ├── ask.py              # Pipeline: search → guardrail → rerank → LLM → citation validation
+│   │   ├── agent.py            # Agent: search tool, tool-calling loop (max 3 rounds)
+│   │   └── search.py           # Vector search (pgvector), reranking, page lookup
 │   ├── db/
-│   │   └── schema.py       # Creates the pgvector extension, table, and columns on startup
-│   └── main.py             # FastAPI app: /ask, /upload, /health
+│   │   └── schema.py           # Creates the pgvector extension, table, and columns on startup
+│   └── main.py                 # FastAPI app: /ask, /upload, /health
 ├── scripts/
-│   ├── ingest.py           # PDF → pages → chunks → embeddings → database
-│   ├── try_rerank.py       # Reranker demo on a controlled example
-│   └── compare_rerank.py   # Shows chunk order before vs. after reranking on real data
+│   ├── ingest.py               # PDF → pages → chunks → embeddings → database
+│   ├── try_rerank.py           # Reranker demo on a controlled example
+│   ├── compare_rerank.py       # Shows chunk order before vs. after reranking on real data
+│   └── try_agent.py            # Walks through one tool-calling round step by step
 ├── frontend/
-│   └── index.html          # Chat UI with clickable citation cards
+│   └── index.html              # Chat UI with clickable citation cards and Agent mode toggle
 ├── tests/
-│   ├── test_health.py      # Health endpoint test
-│   ├── test_citations.py   # Citation validation + guardrail regression tests
-│   └── evaluation.py       # 20-question RAG evaluation suite
+│   ├── test_health.py          # Health endpoint test
+│   ├── test_citations.py       # Citation validation + guardrail regression tests
+│   ├── test_agent.py           # Agent tests with a fake LLM (search, step limit)
+│   ├── evaluation.py           # 20-question evaluation (NumPy guide)
+│   └── evaluation_resume.py    # 11 harder questions (resume)
 ├── .github/workflows/
-│   └── ci.yml              # GitHub Actions CI
+│   └── ci.yml                  # GitHub Actions CI
+├── .dockerignore               # Keeps venv, .env, PDFs out of Docker images
 ├── docker-compose.yml
 ├── Dockerfile
 └── requirements.txt
@@ -256,7 +318,15 @@ curl -X POST http://localhost:8000/ask \
   -d '{"question": "What projects are listed?", "source": "resume.pdf"}'
 ```
 
-Response:
+Add `"use_agent": true` to use Agent mode (default: `false`):
+
+```bash
+curl -X POST http://localhost:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What is LogSignals?", "source": "resume.pdf", "use_agent": true}'
+```
+
+Response (`top_score` is `null` in Agent mode, since the agent may run several searches):
 ```json
 {
   "answer": "Nirmala contributed to Center Randomize with four merged pull requests [1].",
@@ -316,6 +386,15 @@ So anyone can clone the project and run it without setting up the database by ha
 **Why limit threads and memory use?**
 The free server has only 512 MB of memory. Limiting threads and processing in smaller batches brought memory down from about 3.5 GB to about 400 MB, at the cost of slightly slower answers.
 
+**Why an agent, and why optional?**
+A harder evaluation showed the single-search pipeline failing on rare names and broad questions. The agent fixed them, but it's slower and uses more tokens, so it's a toggle: the pipeline stays the default for speed.
+
+**Why build the agent loop by hand instead of using LangChain or LangGraph?**
+To understand and control every step: the model requests a tool, my code runs it, and the result goes back. A framework would make sense for bigger multi-step workflows.
+
+**How is the agent kept safe?**
+Its only tool is read-only search. My code sets which document is searched, so the LLM can't search other documents. It's limited to 3 rounds, it must answer only from returned passages, and its answers go through the same citation checks.
+
 ---
 
 ## Running Tests
@@ -326,10 +405,11 @@ pytest tests/ -v
 
 # Full RAG evaluation suite (needs the app running: docker compose up -d)
 python tests/evaluation.py
+python tests/evaluation_resume.py
 ```
 
-- **Unit tests:** health endpoint, citation validation (made-up citations removed, `【1】` normalized, renumbering), and a regression test for the out-of-scope refusal path.
-- **Evaluation suite:** 20 questions against the 721-page NumPy User Guide, run manually.
+- **Unit tests:** health endpoint, citation validation (made-up citations removed, `【1】` normalized, renumbering), a regression test for the refusal path, and agent tests that use a fake LLM (direct answer, search then answer, step limit).
+- **Evaluation suites:** 20 questions on the 721-page NumPy User Guide (`evaluation.py`) and 11 harder questions on a resume (`evaluation_resume.py`), run manually.
 
 CI runs automatically on every push to `main` and `develop`.
 
@@ -343,8 +423,10 @@ CI runs automatically on every push to `main` and `develop`.
 - [x] Page-level citations with exact supporting quotes
 - [x] Citation validation (made-up citations removed, renumbering)
 - [x] Memory optimization for a 512 MB server
-- [ ] Agentic RAG: the LLM can rephrase and search again when results are weak (read-only tools)
-- [ ] Hybrid search (keyword + vector) for exact names and terms
+- [x] Agentic RAG: the LLM can rephrase and search again when results are weak (read-only tools)
+- [ ] Rate limiting on /ask and /upload
+- [ ] Structured output for the final answer
+- [ ] Retrieval strategy comparison: BM25 and hybrid search with Reciprocal Rank Fusion, measured with Hit@k and MRR
 - [ ] Upload limits (file size and page count)
 - [ ] Cleaner PDF text extraction (some PDFs produce words glued together)
 - [ ] User authentication (JWT) for private document isolation
