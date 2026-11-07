@@ -1,7 +1,8 @@
 import os
 import io
+from urllib import request
 import pdfplumber
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.api.ask import get_answer, get_agent_answer
@@ -9,7 +10,11 @@ from scripts.ingest import extract_pages_from_pdf, ingest_pdf
 from typing import Optional
 from contextlib import asynccontextmanager
 from app.db.schema import init_db
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
+limiter = Limiter(key_func=get_remote_address)
 MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "10"))
 MAX_PAGES = int(os.getenv("MAX_PAGES", "300"))
 
@@ -24,6 +29,9 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Allow frontend to talk to backend
 app.add_middleware(
@@ -40,8 +48,6 @@ def health_check():
             "version": "0.1.0"
             }
 
-
-
 # Pydantic model defines the shape of the request body
 # FastAPI uses this to automatically validate incoming JSON
 
@@ -51,13 +57,15 @@ class AskRequest(BaseModel):  # inherits from BaseModel — gets validation, typ
     use_agent: bool = False   # True = agent, False = normal pipeline
 
 @app.post("/ask")
-def ask(request: AskRequest):
-    if request.use_agent:
+@limiter.limit("5/minute")  # limit to 5 requests per minute per IP
+def ask(request: Request, askRequest: AskRequest):
+    if askRequest.use_agent:
         return get_agent_answer(request.question, source_filter=request.source)
     return get_answer(request.question, source_filter=request.source)
 
 @app.post("/upload")
-async def upload_pdf(file: UploadFile = File(...)):
+@limiter.limit("5/minute")  
+async def upload_pdf(request: Request, file: UploadFile = File(...)):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported.")
     if file.content_type != "application/pdf":
