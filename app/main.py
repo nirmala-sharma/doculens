@@ -1,3 +1,6 @@
+import os
+import io
+import pdfplumber
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -6,6 +9,9 @@ from scripts.ingest import extract_pages_from_pdf, ingest_pdf
 from typing import Optional
 from contextlib import asynccontextmanager
 from app.db.schema import init_db
+
+MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "10"))
+MAX_PAGES = int(os.getenv("MAX_PAGES", "300"))
 
 @asynccontextmanager
 async def lifespan(app):
@@ -55,8 +61,24 @@ async def upload_pdf(file: UploadFile = File(...)):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported.")
     if file.content_type != "application/pdf":
-        raise HTTPException(status_code=400, detail="Uploaded PDF file are supported.")
+        raise HTTPException(status_code=400, detail="Only PDF files are supported.")
     contents = await file.read()
+
+    # reject files that are too big
+    max_bytes = MAX_UPLOAD_MB * 1024 * 1024
+    if len(contents) > max_bytes:
+        raise HTTPException( status_code = 413, detail = f"File is too large. Maximum size is {MAX_UPLOAD_MB} MB.")
+
+    # reject pdf with too many pages
+    try:
+        with pdfplumber.open(io.BytesIO(contents)) as pdf:
+            page_count = len(pdf.pages)
+    except Exception:
+        raise HTTPException(status_code=400, detail=f"Could not read this PDF. Please make sure it is a valid PDF file.")
+
+    if page_count > MAX_PAGES:
+        raise HTTPException(status_code=413, detail=f"PDF has {page_count} pages. Maximum allowed is {MAX_PAGES} pages.")
+    
     pages = extract_pages_from_pdf(contents)
     ingest_pdf(file.filename, pages)
     return {"message": f"'{file.filename}' uploaded and ingested successfully."}
