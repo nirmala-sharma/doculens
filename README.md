@@ -27,11 +27,6 @@ DocuLens finds the most relevant passages in your document, reranks them for acc
 
 > ⚠️ **Privacy Notice:** Do not upload confidential or sensitive documents. Uploaded content is stored on the server for querying purposes.
 
----
-
-## 🖼️ Demo
-
-🔗 **Live Demo:** https://brilliant-beijinho-a6069f.netlify.app/
 
 ---
 
