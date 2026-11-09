@@ -36,6 +36,9 @@ DocuLens finds the most relevant passages in your document, reranks them for acc
 User uploads PDF
 │
 ▼
+Check limits: over 10 MB or 300 pages -> refused (413); damaged PDF -> refused (400)
+│
+▼
 Extract text page by page → split into 150-word chunks (30-word overlap)
 → embed (BAAI/bge-small-en-v1.5) → store in pgvector with file name + page number
 │
@@ -61,7 +64,7 @@ Return answer + citations (file, page, exact supporting quote) + relevance score
 
 **Guardrail:** if no passage scores above the similarity threshold, DocuLens refuses to answer instead of guessing, which prevents hallucinated answers to out-of-scope questions.
 
-**How the relevance score works:** pgvector's `<->` operator measures the **L2 (Euclidean) distance**, the straight-line distance between the question's embedding and each chunk's embedding. The score is `1 − distance`, so higher means more similar. Because the BGE model produces normalized vectors (length 1), L2 distance ranks results in exactly the same order as cosine similarity (`L2² = 2 − 2 × cosine`). The score ranges from 1 (identical) to -1 (opposite); in testing, answerable questions scored about 0.25–0.55 and out-of-scope questions about -0.06 to 0.06, so the refusal threshold is 0.10.
+**How the relevance score works:** pgvector's `<->` operator measures the **L2 (Euclidean) distance**, the straight-line distance between the question's embedding and each chunk's embedding. The score is `1 − distance`, so higher means more similar. Because the BGE model produces normalized vectors (length 1), L2 distance ranks results in exactly the same order as cosine similarity (`L2² = 2 − 2 × cosine`). The score ranges  1 (identical) to -1 (opposite); in testing, answerable questions scored about 0.25–0.55 and out-of-scope questions about -0.06 to 0.06, so the refusal threshold is 0.10.
 
 **Citations you can verify:** for each citation, the reranker picks the single sentence that best supports the answer, so users see the exact quote and the page it came from.
 
@@ -103,6 +106,7 @@ The LLM never runs anything itself: it only *asks* for a search, and my code run
 | LLM | Groq (openai/gpt-oss-20b) | Fast inference, OpenAI-compatible API, supports tool calling for the agent |
 | PDF parsing | pdfplumber | Page-by-page text extraction for page-level citations |
 | Frontend | Vanilla HTML/CSS/JS | Zero dependencies, instant load |
+| Rate limiting | slowapi | Limits requests per IP address on /ask and /upload |
 | Container | Docker Compose | Reproducible dev environment |
 | Testing | pytest + two evaluation suites | Unit tests (with a fake LLM for the agent); evaluations for answer quality |
 | CI | GitHub Actions | Runs the tests on every push and pull request |
@@ -119,6 +123,8 @@ The LLM never runs anything itself: it only *asks* for a search, and my code run
 - **Reranking** — a cross-encoder re-scores the top 20 search results, so the LLM gets the 3 most relevant passages
 - **Agent mode** — an optional tool-calling agent that rewrites and repeats searches when the first one is weak (up to 3 rounds); toggle it with "Agent mode" in the chat
 - **Similarity guardrail** — refuses to answer when the document doesn't contain relevant content
+- **Upload limits** — PDFs larger than 10 MB or longer than 300 pages are refused with a clear message, and damaged PDFs show an error message instead of crashing the server
+- **Rate limiting** — each user (IP address) can ask 10 questions and upload 5 files per minute; extra requests get an error message saying Too Many Requests
 - **Source filtering** — answers come only from the document you uploaded, not mixed with others
 - **Multiple file support** — upload several PDFs and query across all of them
 - **Deduplication** — re-uploading the same file replaces its old chunks, so there are no duplicates
@@ -236,7 +242,7 @@ doculens/
 │   │   └── search.py           # Vector search (pgvector), reranking, page lookup
 │   ├── db/
 │   │   └── schema.py           # Creates the pgvector extension, table, and columns on startup
-│   └── main.py                 # FastAPI app: /ask, /upload, /health
+│   └── main.py                 # FastAPI app: /ask, /upload, /health,     upload limits, rate limiting
 ├── scripts/
 │   ├── ingest.py               # PDF → pages → chunks → embeddings → database
 │   ├── try_rerank.py           # Reranker demo on a controlled example
@@ -338,6 +344,13 @@ Response (`top_score` is `null` in Agent mode, since the agent may run several s
   "top_score": 0.139
 }
 ```
+**Errors**
+
+| Status | When |
+|---|---|
+| 400 | Not a PDF, or the PDF is damaged and can't be read |
+| 413 | File is over 10 MB or has more than 300 pages |
+| 429 | Too many requests: more than 10 questions or 5 uploads per minute from the same IP address |
 
 **GET /health**
 ```json
@@ -390,6 +403,9 @@ To understand and control every step: the model requests a tool, my code runs it
 **How is the agent kept safe?**
 Its only tool is read-only search. My code sets which document is searched, so the LLM can't search other documents. It's limited to 3 rounds, it must answer only from returned passages, and its answers go through the same citation checks.
 
+**Why upload limits and rate limiting?**
+Without them, one very large PDF could use up the 512 MB server's memory, and a script sending hundreds of questions could use up the Groq free-tier limit for everyone. Limits are checked before the expensive work (parsing, embedding, LLM calls) starts. On Render, the app reads the real client IP from the `X-Forwarded-For` header, so each user gets their own limit instead of sharing one.
+
 ---
 
 ## Running Tests
@@ -403,7 +419,7 @@ python tests/evaluation.py
 python tests/evaluation_resume.py
 ```
 
-- **Unit tests:** health endpoint, citation validation (made-up citations removed, `【1】` normalized, renumbering), a regression test for the refusal path, and agent tests that use a fake LLM (direct answer, search then answer, step limit).
+- **Unit tests:** health endpoint, citation validation (made-up citations removed, `【1】` normalized, renumbering), a regression test for the refusal path, agent tests that use a fake LLM (direct answer, search then answer, step limit), upload limits (too large, too many pages, damaged PDF), and rate limiting (the 6th upload in a minute gets 429).
 - **Evaluation suites:** 20 questions on the 721-page NumPy User Guide (`evaluation.py`) and 11 harder questions on a resume (`evaluation_resume.py`), run manually.
 
 CI runs automatically on every push to `main` and `develop`.
@@ -419,10 +435,10 @@ CI runs automatically on every push to `main` and `develop`.
 - [x] Citation validation (made-up citations removed, renumbering)
 - [x] Memory optimization for a 512 MB server
 - [x] Agentic RAG: the LLM can rephrase and search again when results are weak (read-only tools)
-- [ ] Rate limiting on /ask and /upload
+- [x] Upload limits (file size and page count)
+- [x] Rate limiting on /ask and /upload
 - [ ] Structured output for the final answer
 - [ ] Retrieval strategy comparison: BM25 and hybrid search with Reciprocal Rank Fusion, measured with Hit@k and MRR
-- [ ] Upload limits (file size and page count)
 - [ ] Cleaner PDF text extraction (some PDFs produce words glued together)
 - [ ] User authentication (JWT) for private document isolation
 - [ ] Per-session document management (list/delete uploaded files)
