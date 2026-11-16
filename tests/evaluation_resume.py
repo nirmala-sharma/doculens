@@ -49,10 +49,21 @@ def upload_pdf():
     r.raise_for_status()
 
 def ask(question):
-    start = time.time()
-    r = requests.post(f"{BASE_URL}/ask", json = {"question": question, "source": SOURCE, "use_agent": USE_AGENT},timeout=120)
-    latency = round((time.time() - start)*1000)
-    return r.json(), latency
+    for attempt in range(3):
+        start = time.time()
+        r = requests.post(
+            f"{BASE_URL}/ask",
+            json = {"question": question, "source": SOURCE, "use_agent": USE_AGENT},
+            timeout = 120,
+        )
+        if r.status_code == 429:
+            print(f"Rate limited, waiting 60 seconds ...")
+            time.sleep(60)
+            continue
+        latency = round((time.time() - start) * 1000)
+        return r.json(), latency
+    raise RuntimeError(f"Failed to get response after 3 attempts. Last status code: {r.status_code}, response: {r.text}")
+   
 
 def keywords_found(text, keywords, mode):
     text = text.lower()

@@ -24,6 +24,7 @@ services:
       GROQ_API_KEY: ${GROQ_API_KEY}
       MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-10}
       MAX_PAGES: ${MAX_PAGES:-300}
+      PYTHONUNBUFFERED: "1"
     depends_on:
       db:
         condition: service_healthy

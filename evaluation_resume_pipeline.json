@@ -1,17 +1,17 @@
 {
   "label": "pipeline",
-  "date": "2026-10-27 17:18",
-  "answered": "7/11",
-  "grounded": "7/11",
+  "date": "2026-11-15 14:45",
+  "answered": "8/11",
+  "grounded": "8/11",
   "results": [
     {
       "id": 1,
       "question": "What did Nirmala contribute to Center Randomize?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 888,
+      "latency_ms": 964,
       "top_score": 0.155,
-      "answer": "Nirmala contributed four merged pull requests to Center Randomize that fixed a command‑line crash, added school/center search functionality, and corrected the map display. [1]",
+      "answer": "Nirmala contributed 4 merged pull requests that fixed a command-line crash and added school/center search and a corrected map to the Center Randomize project. [1]",
       "citations": [
         {
           "page": 1,
@@ -24,9 +24,9 @@
       "question": "What is Ghost charges?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 1377,
+      "latency_ms": 1157,
       "top_score": 0.19,
-      "answer": "Ghost Charges is a full‑stack application that parses bank‑statement PDFs, identifies recurring (subscription‑style) charges, and presents the results in a React + TypeScript dashboard while ensuring no financial data is stored. The backend is built with Python and FastAPI, the frontend with React and TypeScript, and it includes 37 pytest tests to validate its functionality [1][2].",
+      "answer": "Ghost Charges is a full‑stack application that acts as a subscription detector for bank statements. It uses a Python API to parse PDFs from various bank layouts, identifies recurring charges, and presents the results in a React + TypeScript dashboard. The project includes 37 pytest tests and is designed so that no financial data is stored [1][2].",
       "citations": [
         {
           "page": 1,
@@ -43,7 +43,7 @@
       "question": "What is LogSignals?",
       "passed": false,
       "grounded": false,
-      "latency_ms": 31,
+      "latency_ms": 27,
       "top_score": 0.097,
       "answer": "I couldn't find relevant information in the documentation.",
       "citations": []
@@ -53,7 +53,7 @@
       "question": "What accuracy did Digit Detective achieve?",
       "passed": false,
       "grounded": false,
-      "latency_ms": 26,
+      "latency_ms": 32,
       "top_score": 0.068,
       "answer": "I couldn't find relevant information in the documentation.",
       "citations": []
@@ -63,9 +63,9 @@
       "question": "How many JUnit tests does LogSignals have?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 1087,
+      "latency_ms": 1256,
       "top_score": 0.162,
-      "answer": "LogSignals includes **25 JUnit tests**[1].",
+      "answer": "LogSignals has **25 JUnit tests**[1].",
       "citations": [
         {
           "page": 1,
@@ -78,7 +78,7 @@
       "question": "How many pytest tests does Ghost Charges have?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 1947,
+      "latency_ms": 845,
       "top_score": 0.306,
       "answer": "Ghost Charges has **37 pytest tests**[1].",
       "citations": [
@@ -91,11 +91,11 @@
     {
       "id": 7,
       "question": "Which projects use FastAPI?",
-      "passed": false,
-      "grounded": false,
-      "latency_ms": 1670,
+      "passed": true,
+      "grounded": true,
+      "latency_ms": 1468,
       "top_score": 0.197,
-      "answer": "The projects that use FastAPI are **DocuLens** and **Ghost Charges** [1].",
+      "answer": "The projects that use FastAPI are:\n\n- **DocuLens** – a citation‑first LLM application that uses FastAPI for its API layer [1].\n- **Ghost Charges** – a subscription detector for bank statements that also employs FastAPI for its backend API [1].",
       "citations": [
         {
           "page": 1,
@@ -108,9 +108,9 @@
       "question": "Which certifications does Nirmala have?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 940,
+      "latency_ms": 1156,
       "top_score": 0.174,
-      "answer": "Nirmala holds the following certifications: IBM – Python for Data Science, AI & Development; Google – GenAI Prompt Engineering [1].",
+      "answer": "Nirmala has the following certifications: IBM – Python for Data Science, AI & Development; Google – GenAI Prompt Engineering [1].",
       "citations": [
         {
           "page": 1,
@@ -123,9 +123,9 @@
       "question": "which programming languages does Nirmala know?",
       "passed": false,
       "grounded": false,
-      "latency_ms": 1271,
+      "latency_ms": 1980,
       "top_score": 0.209,
-      "answer": "Nirmala is proficient in the following programming languages:\n\n- **C#** – used for full‑stack development at Imark Digital [1]\n- **Python** – used for FastAPI, Flask, AI/ML projects, and the Digit Detective app [2][3]\n- **Java** – used in the LogSignals API and other backend components [2][3]\n- **JavaScript** – used with React and Angular in front‑end development [2]\n- **TypeScript** – used in the Ghost Charges project [3]",
+      "answer": "Nirmala Sharma is proficient in the following programming languages:\n\n- **C#** – used in full‑stack development with .NET at Imark Digital [1]  \n- **Python** – employed in multiple projects (DocuLens, Digit Detective, Ghost Charges) and listed in her skill set [2], [3]  \n- **Java** – used in the LogSignals log‑monitoring API [3]  \n- **TypeScript** – used in the Ghost Charges subscription detector project [3]",
       "citations": [
         {
           "page": 1,
@@ -146,7 +146,7 @@
       "question": "What is Nirmala's salary expectation?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 825,
+      "latency_ms": 1053,
       "top_score": 0.152,
       "answer": "I couldn't find this in the provided document.",
       "citations": []
@@ -156,7 +156,7 @@
       "question": "What is Nirmala's favorite movie?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 31,
+      "latency_ms": 29,
       "top_score": 0.006,
       "answer": "I couldn't find relevant information in the documentation.",
       "citations": []

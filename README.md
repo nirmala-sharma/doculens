@@ -121,10 +121,10 @@ The LLM never runs anything itself: it only *asks* for a search, and my code run
 - **Clickable citations** — click [1] to open the full passage, with your question's key terms highlighted
 - **Citation validation** — made-up citation numbers are removed, and only the citations actually used are shown, numbered 1, 2, 3...
 - **Reranking** — a cross-encoder re-scores the top 20 search results, so the LLM gets the 3 most relevant passages
-- **Agent mode** — an optional tool-calling agent that rewrites and repeats searches when the first one is weak (up to 3 rounds); toggle it with "Agent mode" in the chat
+- **Agent mode** — an optional tool-calling agent that rewrites and repeats searches when the first one is weak (up to 3 rounds); toggle it with "Agent mode" in the chat, and each answer shows which mode was used
 - **Similarity guardrail** — refuses to answer when the document doesn't contain relevant content
 - **Upload limits** — PDFs larger than 10 MB or longer than 300 pages are refused with a clear message, and damaged PDFs show an error message instead of crashing the server
-- **Rate limiting** — each user (IP address) can ask 10 questions and upload 5 files per minute; extra requests get an error message saying Too Many Requests
+- **Rate limiting** — each user (IP address) can ask 5 questions and upload 5 files per minute; extra requests get an error message saying Too Many Requests
 - **Source filtering** — answers come only from the document you uploaded, not mixed with others
 - **Multiple file support** — upload several PDFs and query across all of them
 - **Deduplication** — re-uploading the same file replaces its old chunks, so there are no duplicates
@@ -350,8 +350,7 @@ Response (`top_score` is `null` in Agent mode, since the agent may run several s
 |---|---|
 | 400 | Not a PDF, or the PDF is damaged and can't be read |
 | 413 | File is over 10 MB or has more than 300 pages |
-| 429 | Too many requests: more than 10 questions or 5 uploads per minute from the same IP address |
-
+| 429 | Too many requests: more than 5 questions or 5 uploads per minute from the same IP address |
 **GET /health**
 ```json
 { "status": "ok", "service": "Doculens-api", "version": "0.1.0" }
