@@ -1,6 +1,6 @@
 {
   "label": "agent",
-  "date": "2026-11-04 13:07",
+  "date": "2026-11-15 14:52",
   "answered": "11/11",
   "grounded": "11/11",
   "results": [
@@ -9,9 +9,9 @@
       "question": "What did Nirmala contribute to Center Randomize?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 1838,
+      "latency_ms": 1304,
       "top_score": null,
-      "answer": "Nirmala contributed to the Center Randomize project by merging four pull requests that fixed a command‑line crash, added school/center search functionality, and corrected the map display. [1]",
+      "answer": "Nirmala contributed to Center Randomize by merging four pull requests that fixed a command‑line crash, added school/center search functionality, and corrected the map display. [1]",
       "citations": [
         {
           "page": 1,
@@ -24,9 +24,9 @@
       "question": "What is Ghost charges?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 3548,
+      "latency_ms": 1267,
       "top_score": null,
-      "answer": "Ghost Charges is a full‑stack application that serves as a **subscription detector for bank statements**. It uses a Python API to parse PDFs of bank statements from various layouts, identifies recurring charges, and presents the results in a React + TypeScript dashboard. The project includes 37 pytest tests and ensures that financial data is never stored. [1]",
+      "answer": "Ghost Charges is a full‑stack application that acts as a subscription detector for bank statements. It uses a Python API (FastAPI) to parse PDFs from various bank layouts, identifies recurring charges, and displays the results in a React + TypeScript dashboard. The project includes 37 pytest tests and does not store any financial data. [1]",
       "citations": [
         {
           "page": 1,
@@ -39,9 +39,9 @@
       "question": "What is LogSignals?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 1780,
+      "latency_ms": 1561,
       "top_score": null,
-      "answer": "LogSignals is a **Log Monitoring & Anomaly Detection API** built with Java, Spring Boot, PostgreSQL, JWT, and JUnit. It processes application logs, flags error spikes that exceed a rolling mean plus two standard deviations per service, and groups these spikes into incidents that trigger alerts. The project includes 25 JUnit tests to validate its functionality. [1]",
+      "answer": "LogSignals is a **log‑monitoring and anomaly‑detection API** built with Java, Spring Boot, PostgreSQL, JWT, and JUnit. It ingests application logs, flags per‑service error spikes that exceed a rolling mean plus two standard deviations, and groups those spikes into incidents that trigger alerts. The project includes 25 JUnit tests to validate its functionality. [1]",
       "citations": [
         {
           "page": 1,
@@ -54,9 +54,9 @@
       "question": "What accuracy did Digit Detective achieve?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 1159,
+      "latency_ms": 859,
       "top_score": null,
-      "answer": "Digit Detective achieved an accuracy of **98.94 %** on the held‑out MNIST test set, compared to 96.75 % for a fully connected baseline. [1]",
+      "answer": "Digit Detective achieved an accuracy of **98.94 %** on the held‑out MNIST test set, compared to 96.75 % for a fully‑connected baseline. [1]",
       "citations": [
         {
           "page": 1,
@@ -69,7 +69,7 @@
       "question": "How many JUnit tests does LogSignals have?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 1377,
+      "latency_ms": 1148,
       "top_score": null,
       "answer": "LogSignals has **25 JUnit tests**[1].",
       "citations": [
@@ -84,7 +84,7 @@
       "question": "How many pytest tests does Ghost Charges have?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 1675,
+      "latency_ms": 1062,
       "top_score": null,
       "answer": "Ghost Charges has **37 pytest tests**[1]",
       "citations": [
@@ -99,45 +99,13 @@
       "question": "Which projects use FastAPI?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 6982,
+      "latency_ms": 2664,
       "top_score": null,
-      "answer": "The projects that use FastAPI are:\n\n- **DocuLens** – a citation‑first LLM application that uses Python and FastAPI for its API layer.  \n- **Ghost Charges** – a subscription‑detector app whose back‑end is a Python API built with FastAPI.  \n\nBoth are listed in the project section of the résumé. ",
+      "answer": "The projects that use FastAPI are:\n\n- **DocuLens** – a citation‑first LLM application built with Python and FastAPI[1].  \n- **Ghost Charges** – a subscription‑detector for bank statements with a Python FastAPI API[1].",
       "citations": [
         {
           "page": 1,
-          "quote": "APIs, FastAPI, Spring Boot, .NET Core, Flask; React, Angular, HTML/CSS"
-        },
-        {
-          "page": 1,
           "quote": "PROJECTS & OPEN SOURCE DocuLens — Citation-First LLM Application (RAG) GitHub | Live demo Python, FastAPI, Groq LLM API, embeddings, PostgreSQL/pgvector, Docker, GitHub Actions"
-        },
-        {
-          "page": 1,
-          "quote": "Backend & Frontend: REST APIs, FastAPI, Spring Boot, .NET Core, Flask; React, Angular, HTML/CSS"
-        },
-        {
-          "page": 1,
-          "quote": "PROJECTS & OPEN SOURCE DocuLens — Citation-First LLM Application (RAG) GitHub | Live demo Python, FastAPI, Groq LLM API, embeddings, PostgreSQL/pgvector, Docker, GitHub Actions"
-        },
-        {
-          "page": 1,
-          "quote": "APIs, FastAPI, Spring Boot, .NET Core, Flask; React, Angular, HTML/CSS"
-        },
-        {
-          "page": 1,
-          "quote": "Backend & Frontend: REST APIs, FastAPI, Spring Boot, .NET Core, Flask; React, Angular, HTML/CSS"
-        },
-        {
-          "page": 1,
-          "quote": "PROJECTS & OPEN SOURCE DocuLens — Citation-First LLM Application (RAG) GitHub | Live demo Python, FastAPI, Groq LLM API, embeddings, PostgreSQL/pgvector, Docker, GitHub Actions"
-        },
-        {
-          "page": 1,
-          "quote": "APIs, FastAPI, Spring Boot, .NET Core, Flask; React, Angular, HTML/CSS"
-        },
-        {
-          "page": 1,
-          "quote": "Backend & Frontend: REST APIs, FastAPI, Spring Boot, .NET Core, Flask; React, Angular, HTML/CSS"
         }
       ]
     },
@@ -146,10 +114,14 @@
       "question": "Which certifications does Nirmala have?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 3484,
+      "latency_ms": 2316,
       "top_score": null,
-      "answer": "Nirmala has earned the following certifications:  \n- IBM – Python for Data Science, AI & Development  \n- Google – GenAI Prompt Engineering[1]",
+      "answer": "Nirmala has earned the following certifications:\n\n- IBM – Python for Data Science, AI & Development  \n- Google – GenAI Prompt Engineering[1][2]",
       "citations": [
+        {
+          "page": 1,
+          "quote": "Certifications: IBM – Python for Data Science, AI & Development; Google – GenAI Prompt Engineering ACTIVITIES & INTERESTS"
+        },
         {
           "page": 1,
           "quote": "Certifications: IBM – Python for Data Science, AI & Development; Google – GenAI Prompt Engineering ACTIVITIES & INTERESTS"
@@ -161,9 +133,9 @@
       "question": "which programming languages does Nirmala know?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 2285,
+      "latency_ms": 2177,
       "top_score": null,
-      "answer": "Nirmala knows the following programming languages: Python, Java, TypeScript/JavaScript, C#, and SQL[1].",
+      "answer": "Nirmala lists the following programming languages in her résumé: Python, Java, TypeScript/JavaScript, C#, and SQL[1].",
       "citations": [
         {
           "page": 1,
@@ -176,7 +148,7 @@
       "question": "What is Nirmala's salary expectation?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 7653,
+      "latency_ms": 18568,
       "top_score": null,
       "answer": "I couldn't find this in the provided document.",
       "citations": []
@@ -186,7 +158,7 @@
       "question": "What is Nirmala's favorite movie?",
       "passed": true,
       "grounded": true,
-      "latency_ms": 9548,
+      "latency_ms": 11127,
       "top_score": null,
       "answer": "I couldn't find this in the provided document.",
       "citations": []
