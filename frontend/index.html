@@ -500,6 +500,19 @@
         outline: 2px solid #6366f1;
         outline-offset: 2px;
     }
+    .mode-badge {
+      display: inline-block;
+      font-size: 12px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      margin-top: 8px;
+      background: #2a2f3a;
+      color: #9aa3b2;
+   }
+   .mode-badge.agent {
+    background: #1e2a4a;
+    color: #8ab4ff;
+  }
      </style>
 </head>
 <body>
@@ -752,12 +765,14 @@ async function askQuestion() {
 
     appendMessage('user', escapeHtml(question));
     appendThinking();
+    const usedAgent = document.getElementById('useAgent').checked;
 
     try {
+
         const res = await fetch(`${API_BASE}/ask`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ question, source: uploadedSource, use_agent: document.getElementById('useAgent').checked })
+            body: JSON.stringify({ question, source: uploadedSource, use_agent: usedAgent})
         });
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -798,8 +813,8 @@ async function askQuestion() {
                 <div class="message-content">
                     <div class="message-text">${answerHtml}</div>
                     ${sourcesHtml}
-                    ${data.top_score !== null? `<div class="score-text"> Relevance: ${data.top_score} </div>`: ''}
-                    </div>
+                    ${data.top_score !== null ? `<div class="relevance">Relevance: ${data.top_score.toFixed(3)}</div>` : ''}
+                    <span class="mode-badge ${usedAgent ? 'agent' : ''}">${usedAgent ? '✦ Agent mode' : 'Normal mode'}</span>                    </div>
             </div>`;
 
         document.getElementById('chatArea').appendChild(row);
