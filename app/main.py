@@ -60,8 +60,8 @@ class AskRequest(BaseModel):  # inherits from BaseModel — gets validation, typ
 @limiter.limit("5/minute")  # limit to 5 requests per minute per IP
 def ask(request: Request, askRequest: AskRequest):
     if askRequest.use_agent:
-        return get_agent_answer(request.question, source_filter=request.source)
-    return get_answer(request.question, source_filter=request.source)
+        return get_agent_answer(askRequest.question, source_filter=askRequest.source)
+    return get_answer(askRequest.question, source_filter=askRequest.source)
 
 @app.post("/upload")
 @limiter.limit("5/minute")  
